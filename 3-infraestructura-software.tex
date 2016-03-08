@@ -97,8 +97,20 @@ Una vez se ha finalizado y configurado el proceso de session description, el ICE
 \item Consulta a un servidor \emph{TURN (Traversal Using Relays around NAT)} como último recurso. 
 \end{enumerate}
 
-Como podemos ver, ICE necesita de servidores externos para obtener la tupla de dirección IP y puerto pulicos neesarios para el otro peer si esta fuera de la misma red local. STUN  es un protocolo estandarizado para descubrir direcciones IP publicas de equipos que están detras de un NAT. TURN es un servidor para transmitir mensajes entre dos clientes. Este servidor solo lo usará si falla la conexión Peer-2-Peer después de probar con las direcciones IP locales y las públicas obtenidas en el servidor STUN. No es obligatorio configurar estos servidores. Si la conexión entre los peer es en la misma red no necesitamos configurar servidores STUN/TURN ya que con las direcciones locales es suficiente.\\
+Como podemos ver, ICE necesita de servidores externos para obtener la tupla de dirección IP y puerto públicos necesarios para el otro peer si esta fuera de la misma red local. STUN  es un protocolo estandarizado para descubrir direcciones IP publicas de equipos que están detrás de un NAT. TURN es un servidor para transmitir mensajes entre dos clientes. Este servidor solo se usará si falla la conexión Peer-2-Peer después de probar con las direcciones IP locales y las públicas obtenidas en el servidor STUN. No es obligatorio configurar estos servidores. Si la conexión entre los peer es en la misma red no necesitamos configurar servidores STUN/TURN ya que con las direcciones locales es suficiente.\\
+
+DIAGRAMA DE ESTADOS DE ICE (PAGINA 132 (118) DEL LIBRO DE WEBRTC)
+
+Como podemos ver en la figura, cada vez que el navegador recolecta un nuevo ICE Candidate, la función \textit{handleIceCandidate(}) se activa y es la encargada de enviar el candidato al peer remoto a través del servidor.\\
  
+Cuando un ICE Candidate llega al peer remoto, se añade en RTCPeerConnection la información de sesión que ontiene ese paquete con \textit{setRemoteDescription()}, de tal manera que el ICE Agent puede empezar a hacer pruebas de conectividad para ver si puede alcanzar al otro peer.\\
+
+Una vez los dos ICE Agent tienen una lista completa de los ICE Candidates de ambos peers, cada agente comprueba pareando ambas lista cuales funcionan. Para ello tienen una planificación de prioridades: primero direcciones IP locales, luego IP públicas y finalmente si ambas fallan servidor TURN. Cada comprobación es una peticion/respuesta STUN que el cliente realiza con un particular candidato enviando una petición STUN desde el candidato local al candidato remoto.\\
+
+Si uno de los pares de candidatos funciona, entonces tenemos una ruta de conexión entre ambos peer. Si todos los candidatos fallan ambas conexiones RTCPeerConnection se marca como fallida o la conexión se hace a través de un servidor TURN.\\
+
+Cuando una conexión se ha establecido correctamente cada ICE Agent continua haciendo peticiones STUN periódicas al otro peer, lo cual sirve también como \textit{keepalives}.\\
+
 \subsection{API's}
 
 \subsubsection{getUserMedia} 
