@@ -84,7 +84,7 @@ Al igual que los peer tienen que intercambiar información sobre el media, tambi
 Esta información ha de obtenerse de manera local en cada peer con el \textit{ICE Agent} asociado a cada objeto RTCPeerConnection. El ICE Agent es responsable de: 
 
 \begin{itemize}
-\item Reunir tuplas candidatas de IP:Puerto.
+\item Reunir tuplas candidatas de IP + Puerto.
 \item Realizar pruebas de conectividad entre los peers.
 \item Enviar \textit{keepalives}.
 \end{itemize}
@@ -111,7 +111,28 @@ Si uno de los pares de candidatos funciona, entonces tenemos una ruta de conexi�
 
 Cuando una conexión se ha establecido correctamente cada ICE Agent continua haciendo peticiones STUN periódicas al otro peer, lo cual sirve también como \textit{keepalives}.\\
 
-\subsection{API's}
+\begin{normalsize}
+\textbf{ICE Candidate Trickling}
+\end{normalsize}
+
+ICE Candidate Tricking es una técnica por la cuál el caller puede incrementar el número de candidatos para el called después de la primera oferta. Este proceso permite al called comenzar a establecer las conexiones ICE por encima de la llamada inmediatamente, sin tener que esperar a que el calle recopile todos los posibles candidatos. Con esta técnica conseguimos un establecimiento del media más rápido.\\
+
+Esta técnica es opcional. Las aplicaciones que lo soportan pueden enviar directamente la oferta inicial inmediatamente y enviar candidatos individuales cuando los vayan teniendo; las aplicaciones que no lo soportan simplemente esperan la indicación de que el \textit{gathering} está completo, crear la oferta con todos los candidatos y enviarla.\\
+
+
+\begin{normalsize}
+\textbf{Formato de un ICE Candidate}
+\end{normalsize}
+
+candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
+
+
+\subsubsection{Negociación de Vídeo}
+
+La negociación de vídeo es un proceso a través del que el cada peer puede indicar al otro que resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{"a=imageattr"} en el SDP. Cada peer puede tener limites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
+
+
+\subsection{WebRTC API}
 
 \subsubsection{getUserMedia} 
 
