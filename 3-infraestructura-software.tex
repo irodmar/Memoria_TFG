@@ -183,20 +183,41 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
 La negociación de vídeo es un proceso a través del que el cada peer puede indicar al otro que resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{"a=imageattr"} en el SDP. Cada peer puede tener limites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
 
 
-\subsection{WebRTC API}
+\subsection{WebRTC API's}
 
 \subsubsection{getUserMedia} 
 
-getUserMedia es la API encargada de darnos el streaming de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento solo esta disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer streaming de casi cualquier fuente de datos, como un disco o sensores conectados al ordenador.\\
+getUserMedia es la API encargada de suministrarnos el streaming de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento solo esta disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer streaming de casi cualquier fuente de datos, como un disco o sensores conectados al ordenador.\\
 
-Al llamarla nos devuelve un objeto que contiene las pistas de audio y/o vídeo. Para llamar a esta función necesitamos suministrarle las \textit{constraints} o restricciones. En esta variable le indicamos si queremos audio, vídeo, o ambas, así como las propiedades que tienen que tener estos: resolución mínima, máxima o ideal del vídeo, framerate o cámara a usar en un dispositivo móvil (frontal/trasera) son algunas de las restricciones que podemos configurar según nuestras necesidades.\\
+Cuándo hacemos una llamada a la función \textit{getUserMedia()} nos devuelve un objeto que contiene las pistas de audio y/o vídeo. Para llamar a esta función necesitamos suministrarle las \textit{constraints} o restricciones. En esta variable le indicamos si queremos audio, vídeo, o ambas, así como las propiedades que tienen que tener estos: resolución mínima, máxima o ideal del vídeo, framerate o cámara a usar en un dispositivo móvil (frontal/trasera) son algunas de las restricciones que podemos configurar según nuestras necesidades.\\
 
 La llamada a la función nos devuelve un \textit{callback}. Si hay éxito al llamar la función nos devuelve el objeto anteriormente mencionado y pasa a ejecutar la función callback de éxito. En caso contrario nos devuelve el código del error y llama a la función callback de fallo. Esta forma de llamar a la función desaparecerá en próximas revisiones ya que se está implementando una llamada por \textit{promises}.\\
 
 
 \subsubsection{RTCPeerConnection}
 
-Esta API es la encargada de crear la conexión Peer-2-Peer entre el navegador local y el remoto. Trabaja de manera diferente si es el que hace la llamada ( \textit{caller}) y el que recibe la llamada (\textit{called}). El proceso de conexión es comenzado por el caller, el cuál envía una oferta a peer remoto, el cuál contesta si acepta o rechaza la llamada.
+Esta API es la encargada de crear la conexión Peer-2-Peer entre el navegador local y el remoto. Trabaja de manera diferente si es el que hace la llamada (\textit{caller}) y el que la recibe (\textit{called}) debido a la señalización oferta/respuesta que ya hemos visto. Para ello hace uso de sus funciones para completar el proceso de señalización descrito anteriormente.\\
+
+\noindent Es también la encargada de manejar la conexión una vez establecida. Entre las funciones automáticas que realiza se encuentran:\\
+
+\begin{enumerate}
+\item Ocultamiento de paquetes perdidos.
+\item Cancelación de eco.
+\item Adaptación del ancho de banda.
+\item Buffer dinámico en función del jitter o delay.
+\item Control automático de ganancia.
+\item Reducción o eliminación de ruido.
+\end{enumerate}
+
+Es el desarrollador de la aplicación el encargado de llamar a las funciones que componen esta API en el orden, tiempo y forma correcta para cumplir con la arquitectura JSEP y conseguir un intercambio de descriptores de sesión y de ICE Candidates exitoso.\\
+
+\noindent La función admite dos argumentos, los cuales son opcionales: 
+
+\begin{lstlisting}[caption=Llamada a función RTCPeerConnection]
+var PC = new RTCPeerConnection(ICEconfig, pcConstraints);
+\end{lstlisting}
+
+\textit{ICEConfig} es una variable la cuál contiene los datos necesarios para conectarse con el servidor STUN y TURN y poder hacer NAT Trasversal. \textit{pcConstraints} también es una variable a la que se le pueden añadir una serie de restricciones como \textit{RtpDataChannels}, la cuál estará obsoleta en futuras versiones y se dejará de usar. Esta variable está para futuras mejoras.\\
 
 \subsubsection{RTCDataChannel}
 
