@@ -5,23 +5,31 @@ Una vez presentados los objetivos que tenemos marcados hay que echar una mirada 
 
 \section{WebRTC}
 
-WebRTC es un proyecto opensource y gratuito que nos permite tener en el navegador tecnología en tiempo real ('Real-Time Communication' ó RTC), sin plugins, a través de una simple API de JavaScript. Facilita las llamadas de voz, videollamadas, chat y compartimiento de archivos y datos. WebRTC es una tecnología Peer-to-Peer, por lo que nos permite desarrollar estas aplicaciones para que funcionen directamente desde un navegador a otro sin pasar por servidor intermedio. \\
+Web Real-Time Communication (WebRTC) es un proyecto opensource y gratuito que nos permite tener en el navegador tecnología en tiempo real ('Real-Time Communication' ó RTC), sin plugins, a través de una simple API de JavaScript. Facilita las llamadas de voz, videollamadas, chat y compartimiento de archivos y datos. WebRTC es una tecnología Peer-to-Peer, por lo que nos permite desarrollar estas aplicaciones para que funcionen directamente desde un navegador a otro \textbf{sin pasar por servidor intermedio.} \\
 
 En todo el documento nos referimos a una llamada WebRTC entre dos navegadores, pero hay que tener en cuenta que en muchas ocasiones la conexión puede ser entre un navegador y algún tipo de servidor ó MCU configurado y trabajando con la API de WebRTC para ofrecernos cualquier servicio en tiempo real.\\
 
-La API de WebRTC nos proporciona todo el set completo de funciones para manejar y crear nuestras aplicaciones, como el control y administración de la conexión, codificación/decodificación del audio/vídeo, negociación entre navegadores, control de la conexión, firewall y NAT traversal.\\
+Enviar audio y/o vídeo con calidad, e intercambiar cualquier tipo de datos requiere de muchas funcionalidades complejas en el navegador. Para no preocuparnos de estas dificultades la API de WebRTC nos proporciona todo el set completo de funciones para manejar y crear nuestras aplicaciones, como el control y administración de la conexión, codificación/decodificación del audio/vídeo, negociación entre navegadores, control de la conexión, firewall y NAT traversal.\\
+
+Con unas docenas de lineas de JavaScript podemos tener una videconferencia Peer-2-Peer con intercambio de archivos o datos en tiempo real. Ese es el potencial que WebRTC tiene. Pero aún así hay una serie de escollos como señalización, descubrimiento de peers, negociación de la conexión o seguridad que debemos controlar para conseguir una llamada exitosa.\\
 
 Que WebRTC no necesita un servidor no es del todo cierto, ya que sí que necesita de lo que llamamos Servidor de Señalización. Este es el encargado de establecer el primer contacto entre ellos, facilitando el intercambio de paquetes de la negociación WebRTC.\\
 
 WebRTC está compuesto de 3 API's:
 
 \begin{itemize}
-\item getUserMedia
-\item RTCPeerConnection
-\item RTCDataChannel
+\item getUserMedia: adquisición del streaming de audio y video.
+\item RTCPeerConnection: comunicación de audio y video.
+\item RTCDataChannel: comunicación de cualquier otro tipo de datos.
 \end{itemize}
 
-A continuación vamos a desgranar y explicar como funciona el intercambio de paquetes de señalización así como cada una de las API's que componen WebRTC.
+A continuación vamos a desgranar y explicar como funciona el intercambio de paquetes de señalización así como cada una de las API's que componen WebRTC.\\
+
+Nota: En este momento WebRTC es accesible para todos los usuarios a través de navegadores como Chrome o Firefox. Sin embargo, WebRTC está aun en construcción, tanto la forma de implementar las API's que tiene cada navegador como la propia norma, con sus protocolos de funcionamiento. Como resultado tenemos que todo lo que exponga sobre estas API's puede cambiar en el futuro.\\
+
+PAGINA: http://chimera.labs.oreilly.com/books/1230000000545/ch18.html
+
+RECUADRO: http://airamrguez.blogspot.com.es/2010/08/crear-un-cuadro-de-texto-con-borde-en.html
 
 \subsection{Señalización} 
 
@@ -180,7 +188,7 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
 
 \subsubsection{Negociación de Vídeo}
 
-La negociación de vídeo es un proceso a través del que el cada peer puede indicar al otro que resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{"a=imageattr"} en el SDP. Cada peer puede tener limites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
+La negociación de vídeo es un proceso a través del que el cada peer puede indicar al otro que resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{'a=imageattr'} en el SDP. Cada peer puede tener limites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
 
 
 \subsection{WebRTC API's}
@@ -221,6 +229,42 @@ var PC = new RTCPeerConnection(ICEconfig, pcConstraints);
 
 \subsubsection{RTCDataChannel}
 
+Llegamos a la tercera y última pero no menos importante API de WebRTC. RTCDataChannel nos da la posibilidad de transferir todo tipo de datos u objetos a través de la conexión Peer-2-Peer establecida con RTCPeerConnection.\\
+
+Esta conexión de datos es \textit{full duplex} y nos permite el intercambio de datos, intercambio de archivos, gaming, etc, todo ello con un delay mínimo y sabiendo de la salvaguarda de estos datos, ya que no pasan por ningún servidor intermedio sino que van de navegador a navegador. Las posibilidades son infinitas y se puede adaptar a cualquier necesidad que se tenga para nuestra aplicación.\\
+
+\begin{normalsize}
+\noindent \textbf{Capabilities}\\
+\end{normalsize}
+
+RTCDataChannel soporta un juego muy flexible de tipos de datos. Soporta \textit{strings}, binarios de JavaScript, \textit{Blobs}, \textit{ArrayBuffer} y \textit{ArrayBufferView}. Según nuestras necesidades nos puede resultar más útil un tipo de datos u otro.\\
+
+Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configurar la conexión de datos de manera \textit{reliable} o \textit{unreliable}. La primera de ellas nos garantiza la entrega de todos los mensajes que enviemos y que los mismos lleguen en el mismo orden que los hemos enviado. Esto provoca una sobrecarga que puede provocar un funcionamiento mas lento además de tener un mayor delay. La segunda de ellas no nos garantiza la entrega de todos los paquetes al otro peer, así como tampoco el orden en el que llegan. Esto reduce el \textit{overhead} permitiéndonos tener una conexión más rápida. SCTP es un protocolo de transporte similar a TCP y UDP que puede funcionar directamente en la cima del protocolo IP. Sin embargo, en WebRTC, SCTP es construido sobre un túnel DTLS, el cuál corre encima de UDP.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{RTCDataChannel_Capabilities}
+\caption{RTCDataChannel Capabilities. Fuente.\protect\footnotemark }
+\label{fig:datachannel_capabilities}
+\end{figure}
+\footnotemark{Fuente de la tabla: http://www.html5rocks.com/en/tutorials/webrtc/datachannels/}
+
+\noindent Como las API's anteriores llamamos a RTCDataChannel con una variable con opciones de configuración:
+
+\begin{itemize}
+\item Ordered: Booleano para indicar si queremos que nos garantice la entrega ordenada de paquetes.
+\item maxRetransmitTime: Tiempo máximo para intentar retransmitir cada paquete si la entrega falla. (Fuerza el modo \textit{unreliable}).
+\item maxRetransmits: Número máximo de veces que queremos que reenvíe cada paquete si la entrega falla. No puede usarse junto con \textit{maxRetransmitTime}. (Fuerza el modo \textit{unreliable}).
+\item Protocol: Permite el uso de un subprotocolo pero tiene que ser soportado por TCP/UDP.
+\item Negociated: Si se configura en true, elimina la configuración automática del datachannel en el otro peer. Se da por echo que tienes previsto crear el canal de otra manera con el mismo ID.
+\item Id: Permite dar tu propio ID al canal.
+\end{itemize}
+
+\begin{normalsize}
+\noindent \textbf{Seguridad}\\
+\end{normalsize}
+
+La encriptación es un \textit{mandatory} (obligación) para todos los componentes WebRTC. En RTCDatachannel todos los datos son codificados con \textit{Datagram Transport Layer Security (DTLS)}. DTLS es un derivado de SSL por lo que los datos que intercambies irán igual de seguro que si usásemos SSL. Es obligatorio, para que un navegador pueda usar WebRTC, que tenga implementado esta tecnología.
 
 \section{ICE y ICEJS}
 
