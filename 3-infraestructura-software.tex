@@ -7,7 +7,7 @@ Una vez presentados los objetivos que tenemos marcados hay que echar una mirada 
 
 Web Real-Time Communication (WebRTC) es un proyecto opensource y gratuito que nos permite tener en el navegador tecnología en tiempo real ('Real-Time Communication' ó RTC), sin plugins, a través de una simple API de JavaScript. Facilita las llamadas de voz, videollamadas, chat y compartimiento de archivos y datos. WebRTC es una tecnología Peer-to-Peer, por lo que nos permite desarrollar estas aplicaciones para que funcionen directamente desde un navegador a otro \textbf{sin pasar por servidor intermedio.} \\
 
-En todo el documento nos referimos a una llamada WebRTC entre dos navegadores, pero hay que tener en cuenta que en muchas ocasiones la conexión puede ser entre un navegador y algún tipo de servidor ó MCU configurado y trabajando con la API de WebRTC para ofrecernos cualquier servicio en tiempo real.\\
+En todo el documento nos referimos a una llamada WebRTC entre dos navegadores, lo cual es su principal propósito, pero también esta diseñado para que pueda ser integrado con otros sistemas de comunicación como voz sobre IP (VOIP), clientes SIP, e incluso sobre la red telefonica pública conmutada (PSTN).\\
 
 Enviar audio y/o vídeo con calidad, e intercambiar cualquier tipo de datos requiere de muchas funcionalidades complejas en el navegador. Para no preocuparnos de estas dificultades la API de WebRTC nos proporciona todo el set completo de funciones para manejar y crear nuestras aplicaciones, como el control y administración de la conexión, codificación/decodificación del audio/vídeo, negociación entre navegadores, control de la conexión, firewall y NAT traversal.\\
 
@@ -25,11 +25,12 @@ WebRTC está compuesto de 3 API's:
 
 A continuación vamos a desgranar y explicar como funciona el intercambio de paquetes de señalización así como cada una de las API's que componen WebRTC.\\
 
-Nota: En este momento WebRTC es accesible para todos los usuarios a través de navegadores como Chrome o Firefox. Sin embargo, WebRTC está aun en construcción, tanto la forma de implementar las API's que tiene cada navegador como la propia norma, con sus protocolos de funcionamiento. Como resultado tenemos que todo lo que exponga sobre estas API's puede cambiar en el futuro.\\
+\begin{center}
+\fbox{\begin{varwidth}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\textbf{\underline{\emph{Nota:}}} En este momento WebRTC es accesible para todos los usuarios a través de navegadores como Chrome o Firefox. Sin embargo, WebRTC está aún en construcción, tanto la forma de implementar las API's que tiene cada navegador como la propia norma, con sus protocolos de funcionamiento. Como resultado tenemos que todo lo que exponga sobre estas API's puede cambiar en el futuro.
+\end{varwidth}}
+\end{center}
 
-PAGINA: http://chimera.labs.oreilly.com/books/1230000000545/ch18.html
-
-RECUADRO: http://airamrguez.blogspot.com.es/2010/08/crear-un-cuadro-de-texto-con-borde-en.html
 
 \subsection{Señalización} 
 
@@ -195,12 +196,57 @@ La negociación de vídeo es un proceso a través del que el cada peer puede ind
 
 \subsubsection{getUserMedia} 
 
-getUserMedia es la API encargada de suministrarnos el streaming de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento solo esta disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer streaming de casi cualquier fuente de datos, como un disco o sensores conectados al ordenador.\\
+getUserMedia es la API encargada de suministrarnos el streaming de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento solo esta disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer streaming de casi cualquier fuente de datos, como un disco duro o sensores conectados al ordenador.\\
 
-Cuándo hacemos una llamada a la función \textit{getUserMedia()} nos devuelve un objeto que contiene las pistas de audio y/o vídeo. Para llamar a esta función necesitamos suministrarle las \textit{constraints} o restricciones. En esta variable le indicamos si queremos audio, vídeo, o ambas, así como las propiedades que tienen que tener estos: resolución mínima, máxima o ideal del vídeo, framerate o cámara a usar en un dispositivo móvil (frontal/trasera) son algunas de las restricciones que podemos configurar según nuestras necesidades.\\
+Para tener una rica videoconferencia no es suficiente con obtener los streaming en formato \textit{raw} de la cámara o el micrófono. Cada streaming debe ser procesado para aumentar la calidad, sincronizarlos y ajustar el \textit{bitrate} de salida según las fluctuaciones del ancho de banda y la latencia entre peers. A la hora de recibir el streaming nos encontramos en la misma situación pero a la inversa. WebRTC nos da unos motores de procesado de audio y vídeo (figura \ref{fig:audio-video_engines}) que hará todas estas cosas por nosotros.\\
 
-La llamada a la función nos devuelve un \textit{callback}. Si hay éxito al llamar la función nos devuelve el objeto anteriormente mencionado y pasa a ejecutar la función callback de éxito. En caso contrario nos devuelve el código del error y llama a la función callback de fallo. Esta forma de llamar a la función desaparecerá en próximas revisiones ya que se está implementando una llamada por \textit{promises}.\\
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{audio-video_engines}
+\caption{Motores de audio y video de WebRTC }
+\label{fig:audio-video_engines}
+\end{figure}
 
+getUserMedia es la API que nos suministra las funciones y los motores necesarios para poder cumplir con las especificaciones anteriormente mencionadas, así como manipular o procesar los streaming obtenidos. El objeto \textit{MediaStream} (figura \ref{fig:mediaStream}) es la forma en la que nos suministra los streams esta API.\\
+
+\begin{itemize}
+\item El objeto MediaStream consiste en uno o varias pistas o \textit{tracks} (\textit{MediaStreamTrack}).
+\item Las pistas que componen el MediaStream están sincronizadas una con la otra.
+\item La salida del MediaStream puede ser enviada a uno o varios destinatarios, como fuente de vídeo local, un peer remoto o procesarlo con funcionalidades que nos proporciona, por ejemplo, HTML5.
+\end{itemize}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{mediaStream}
+\caption{MediaStream}
+\label{fig:mediaStream}
+\end{figure}
+
+Todo el procesado de audio y vídeo, como la cancelación de ruido, ecualización, mejora de la imagen y todas las demás son automáticamente manejadas por os motores de audio y vídeo.\\
+
+Sin embargo, las características del media stream son restringidas por las capacidades de los dispositivos de entrada: audio mono o stereo, diferentes resoluciones de video según la cámara, etc. Cuando hacemos una petición de media al navegador, getUserMedia nos permite indicar una lista de restricciones obligadas y opcionales.\\
+
+\begin{lstlisting}[caption=Llamada a función RTCPeerConnection]
+var constraints = {
+    audio: false,
+    video: {
+        width: { min: 1024, ideal: 1280, max: 1920 },
+        height: { min: 576, ideal: 720, max: 1080 },
+    }
+};
+
+navigator.getUserMedia(constraints, handleUserMedia, handleUserMediaError); 
+
+function handleUserMedia(stream){
+    var video = document.querySelector('video');
+    video.src = window.URL.createObjectURL(stream);
+}
+
+function handleUserMediaError(error){
+	console.log('getUserMedia error: ', error);
+}
+
+\end{lstlisting}
 
 \subsubsection{RTCPeerConnection}
 
