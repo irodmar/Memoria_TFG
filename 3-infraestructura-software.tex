@@ -33,6 +33,7 @@ A continuación vamos a desgranar y explicar como funciona el intercambio de paq
 
 
 \subsection{Señalización} 
+\label{subsec:senalizacion}
 
 Señalización es el proceso de intercambio de datos y metadatos necesarios para coordinar una llamada entre navegadores con WebRTC. Para realizar esta labor WebRTC necesita de la ayuda de un servidor externo ya que la norma deja el campo de la señalización a la capa de la aplicación.\\
 
@@ -166,10 +167,17 @@ Cuando una conexión se ha establecido correctamente cada ICE Agent continua hac
 \noindent \textbf{ICE Candidate Trickling}\\
 \end{normalsize}
 
-ICE Candidate Tricking es una técnica por la cuál el caller puede incrementar el número de candidatos para el called después de la primera oferta. Este proceso permite al called comenzar a establecer las conexiones ICE por encima de la llamada inmediatamente, sin tener que esperar a que el calle recopile todos los posibles candidatos. Con esta técnica conseguimos un establecimiento del media más rápido.\\
+Recopilar IP's locales es rápido, pero conseguir las IP's publicas con sus puertos a través de servidores STUN requiere de un intercambio de paquetes entre el peer y el servidor STUN y por consiguiente más tiempo.\\
 
-Esta técnica es opcional. Las aplicaciones que lo soportan pueden enviar directamente la oferta inicial inmediatamente y enviar candidatos individuales cuando los vayan teniendo; las aplicaciones que no lo soportan simplemente esperan la indicación de que el \textit{gathering} está completo, crear la oferta con todos los candidatos y enviarla.\\
+ICE Candidate Tricking es una extensión del protocolo ICE por la cuál el caller puede incrementar el número de candidatos para el called después de la primera oferta. Este proceso permite al called comenzar a establecer las conexiones ICE por encima de la llamada inmediatamente, sin tener que esperar a que el caller recopile todos los posibles candidatos. Con esta técnica conseguimos un establecimiento del media más rápido.\\
 
+Esta técnica es opcional aunque es la recomendada. Las aplicaciones que lo soportan pueden enviar directamente la oferta SDP inicial sin candidatos ICE inmediatamente, y enviar candidatos individuales cuando los vayan descubriendo; las aplicaciones que no lo soportan simplemente esperan la indicación de que el \textit{gathering} está completo, crean la oferta con todos los candidatos y enviarla.\\
+
+\begin{enumerate}
+\item Intercambio ofertas SDP sin ICE Candidates.
+\item Cuando se descubre un candidato se envía directamente a través del servidor de señalización.
+\item La comprobación de los ICE Candidates se realiza en el momento de recibir uno.
+\end{enumerate}
 
 \begin{normalsize}
 \noindent \textbf{Formato de un ICE Candidate}\\
@@ -281,7 +289,33 @@ El cerebro humano es muy bueno 'rellenando huecos' pero altamente sensible a los
 
 Por este motivo las aplicaciones de audio y vídeo en tiempo real están diseñadas para tolerar pérdidas intermitentes de paquetes perdidos. Los codecs pueden rellenar estos pequeños espacios que dejan los paquetes perdidos, muchas veces incluso con muy poco impacto con respecto a la imagen real. Una baja latencia y el \textit{'timeliness'} es mucho mas importante que la fiabilidad (reliability).\\
 
-Este requerimiento de timeliness sobre la fiabilidad es la primera razón por la que el protocolo UDP es elegido para el envio de datos en tiempo real. TCP es fiable y tiene entrega ordenada de paquetes. Si uno de ellos se pierde, entonces TCP almacena los paquetes siguientes y para la retransmisión hasta que el paquete perdido es reenviado y recibido. En cambio UDP no garantiza la entrega de paquetes, el orden de entrega, ruta de los paquetes ni control de congestión de red.\\
+Este requerimiento de timeliness sobre la fiabilidad es la primera razón por la que el protocolo UDP es elegido para el envío de datos en tiempo real. TCP es fiable y tiene entrega ordenada de paquetes. Si uno de ellos se pierde, entonces TCP almacena los paquetes siguientes y para la retransmisión hasta que el paquete perdido es reenviado y recibido. En cambio UDP no garantiza la entrega de paquetes, el orden de entrega, ruta de los paquetes ni control de congestión de red.\\
+
+WebRTC usa UDP como protocolo de transporte. Dadas las características de UDP, ¿podemos simplemente enviar cada paquete según llega y olvidarnos? no, ya que también necesitamos mecanismos para atravesar NAT's y firewalls, negociar los parámetros de cada stream, encriptar los datos de usuario, congestión de red... Para abastecer estas necesidades WebRTC tiene una lista de protocolos y servicios que trabajan por encima de UDP.\\
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{pila_webrtc}
+\caption{Pila de protocolos WebRTC}
+\label{fig:pila_webrtc}
+\end{figure}
+
+
+ICE, STUN y TURN son necesarios para establecer y mantener la conexíon Peer-2-Peer sobre UDP, como ya hemos visto en el apartado de señalización.\\
+
+\begin{normalsize}
+\noindent \textbf{Entrega de vídeo con SRTP}\\
+\end{normalsize}
+
+WebRTC nos permite adquirir el video/audio y enviarlo para la visualización en el otro peer. También nos permite elegir las características con las que queremos adquirir ese video/audio, pero a partir de ahí es WebRTC y el motor de red el que se encarga del resto. Optimización en la codificacion, tratar con paquetes perdidos, jitter, etc, son algunas de las cosas con las que tiene que tratar WebRTC. Por este motivo WebRTC no garantiza la entrega en el otro peer del vídeo con a su máxima resolución.\\
+
+El motor de red tiene su propio flujo de datos sin tener en cuenta desde el comienzo la capacidad de la red ni el bitrate del streaming. Primero empieza enviando el vídeo y el audio a un bitrate bajo (<500kbps) y luego comienza a ajustar la calidad del stream según la capacidad del ancho de banda. Según pueda variar el ancho de banda de la conexión de red así actúa el motor de red para ajustarlo.\\
+
+SRTP define un formato de paquete estándar para enviar audio y vídeo a través de IP, pero por si mismo no proporciona ningún mecanismo o garantias de entrega en orden, fiabilidad en la entrega o corrección de errores. Simplemente encapsula el video y el audio con adicional metadata. Entre esta metadata cada paquete SRTP tiene un numero de secuencia incremental, una marca de tiempo y un identificador SSRC, lo que permite al peer que recibe el flujo detectar si los paquetes llegan desordenados, sincronizar los diferentes streams y asociar cada paquete al stream correspondiente.\\
+
+SRTP usa un protocolo que lo complementa. Este es SRTCP, el cual es el protocolo que controla el numero de paquetes y bytes perdidos, ultimo numero de secuencia recibido, jitter de los paquetes SRTP recibidos y otras estadísticas. Periódicamente estas estadísticas se intercambian entre los peers y la usan para ajustar la tasa de envío, calidad de codificación y otros parámetros.\\
+
+Ambos protocolos corren directamente sobre UDP y trabajan conjuntamente para adaptar y optimizar la conexión.\\
 
 
 \subsubsection{RTCDataChannel}
@@ -301,10 +335,9 @@ Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configura
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.9\textwidth]{RTCDataChannel_Capabilities}
-\caption{RTCDataChannel Capabilities. Fuente.\protect\footnotemark }
+\caption{RTCDataChannel Capabilities.}
 \label{fig:datachannel_capabilities}
 \end{figure}
-\footnotemark{Fuente de la tabla: http://www.html5rocks.com/en/tutorials/webrtc/datachannels/}
 
 \noindent Como las API's anteriores llamamos a RTCDataChannel con una variable con opciones de configuración:
 
@@ -321,15 +354,49 @@ Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configura
 \noindent \textbf{Seguridad}\\
 \end{normalsize}
 
-La encriptación es un \textit{mandatory} (obligación) para todos los componentes WebRTC. En RTCDatachannel todos los datos son codificados con \textit{Datagram Transport Layer Security (DTLS)}. DTLS es un derivado de SSL por lo que los datos que intercambies irán igual de seguro que si usásemos SSL. Es obligatorio, para que un navegador pueda usar WebRTC, que tenga implementado esta tecnología.
+La encriptación es un \textit{mandatory} (obligación) para todos los componentes WebRTC. Tanto audio, video, data e información de la aplicación debe estar encriptado cuando se transmite.. En RTCDatachannel todos los datos son codificados con \textit{Datagram Transport Layer Security (DTLS)}. DTLS es un derivado de SSL por lo que los datos que intercambies irán igual de seguro que si usásemos SSL. Es obligatorio, para que un navegador pueda usar WebRTC, que tenga implementado esta tecnología.\\
+
+
+\begin{normalsize}
+\noindent \textbf{Entrega de datos con SCTP}\\
+\end{normalsize}
+
+Como ya hemos visto en la imagen \ref{fig:pila_webrtc}, RTCDataChannel trabaja con un protocolo llamado \textit{Stream Control Transmission Protocol (SCTP)}, el cual corre sobre DTLS, y este a su vez corre sobre UDP. Recalco esto ya que a diferencia del audio y el vídeo, para enviar data de la aplicación si que necesitamos que lleguen todos los paquetes, por lo que si alguno se ha perdido hay que reenviarlo.\\
+
+\noindent WebRTC requiere de 4 características que debe cumplir el protocolo:
+
+\begin{enumerate}
+\item El protocolo de transporte debe permitir tener varios canales independientes multiplexados.
+\begin{enumerate}
+\item Cada canal debe permitir entrega ordenada y desordenada.
+\item Cada canal debe tener entrega fiable.
+\item Cada canal debe tener niveles de prioridad definidos por la aplicación.
+\end{enumerate}
+\item El protocolo debe proveer 'orientado al mensaje', por lo que debe tener fragmentación y reagrupacion de los datos.
+\item El protocolo debe tener mecanismos control del flujo y de la congestión.
+\item El protocolo debe tener seguridad y confidencialidad en los datos que se envían.
+\end{enumerate}
+
+La última característica se cumple ya que SCTP corre sobre el túnel DTLS, por lo que los datos que enviemos van encriptados y seguros hasta nuestro destinatario. Por otro lado SCTP, como vemos en la tabla \ref{fig:datachannel_capabilities} permite configurar la fiabilidad y la entrega ordenada de paquetes. SCTP también trocea los datos que queremos enviar y los encapsula en paquetes SCTP de 224 bits.\\
+
+Para el control de flujo y de congestión SCTP tiene un 'handshake' inicial similar al de TCP. Ambos usan la misma ventana inicial de congestión así como la misma lógica de crecimiento y decrecimiento para reducir la congestión una vez la comunicación está activa.\\
+
 
 \section{ICE y ICEJS}
 
-df
+ICE o \textit{Internet Communication Engine} es un framework RPC orientado a objetos desarrollado por Zeroc con soporte para lenguajes como C++, C\#, Java, JavaScript, y Python entre otros, y SO's como Linux, Mac OS X y Windows, que nos permite crear conexiones e interacciones de red entre maquinas con servidores corriendo en diferentes lenguajes y/o SO's.\\
+
+ICEJS, o ICE for JavaScript es un \textit{plugin} que se le puede añadir a ICE el cual añade la funcionalidad de \textit{websockets} lo que nos permite conectar navegadores a través de JavaScript a los protocolos comunes de ICE. \\
+
+En versiones más actuales ICEJS viene incorporado en la suite principal de ICE, pero nosotros usaremos la versión 3.5 que es la que soporta la suite de JdeRobot, por lo que debemos instarlo una vez instalado ICE.\\
 
 \section{JdeRobot}
 
-dfdfdf
+JdeRobot es un proyecto de la Universidad Rey Juan Carlos. Es un framework para el desarrollo de aplicaciones relacionadas con la rebotica, la visión artificial, automatización del hogar y escenarios con sensores y actuadores, y software inteligente.\\
+
+Esta suite tiene muchos complementos y componentes desarrollados, pero para este proyecto solo haremos uso de unos pocos:
+
+
 
 \section{ArDrone de Parrot}
 
