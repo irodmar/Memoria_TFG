@@ -1,6 +1,6 @@
 \chapter{Infraestructura Software} 
 
-Una vez presentados los objetivos que tenemos marcados hay que echar una mirada a las tecnologías software y hardware que hemos utilizado como base en el proyecto. La más importante y sobre la que está centrado el proyecto es WebRTC. Además hemos emleado, como apoyo para cubrir las partes que WebRTC no llega, ICEJS junto ca la plataforma robótica JdeRobot.
+Una vez presentados los objetivos que tenemos marcados hay que echar una mirada a las tecnologías software y hardware que hemos utilizado como base en el proyecto. La más importante y sobre la que está centrado el proyecto es WebRTC. Además hemos emleado, como apoyo para cubrir las partes que WebRTC no llega, ICEJS junto con la plataforma robótica JdeRobot. Estas tecnologías junto con el simulador robótico Gazebo nos ha permitido probar, depurar y mejorar el código antes de realizar los experimentos sobre el drone real.
 
 
 \section{WebRTC}
@@ -53,7 +53,7 @@ JSEP no establece un modelo particular de señalización más allá de usar uno 
 
 El orden en que se llaman a estos mecanismos o funciones de la API es importante, por lo que la aplicación deberá saber el orden en el que tiene que llamar a cada una, convertir las ofertas en mensajes que entienda el protocolo de señalización elegido y hacer la conversión inversa con los mensajes que se reciben para obtener ofertas que entiendan as API's.\\
 
-El manejo de las descripciones de sesión es simple y sencillo. Siempre que el intercambio de una oferta/respuesta es necesario, el par que establece la llamada ó \textit{llamante (callee)} crea la oferta llamando a la función \emph{createOffer()} de la API. Esta oferta puede ser modificada por la aplicación si así fuese necesario y se establece como configuración local en ese peer con \emph{setLocalDescription()} y se envía al par remoto a través del servidor de señalización utilizado. Al recibir esta oferta el par \textit{llamado (called)} lo utiliza como configuración del otro par con \emph{setRemoteDescription()} y utiliza \emph{createAnswer()} para crear una respuesta apropiada, la cual establece como configuración local (\emph{setLocalDescription()}) y envía la respuesta de vuelta a través del servidor de señalización. El par llamado al recibir la respuesta llama también a \emph{setRemoteDescription()}, y de esta manera ambos lados tienen la información del media propia y la del par remoto.\\ 
+El manejo de las descripciones de sesión es simple y sencillo. Siempre que el intercambio de una oferta/respuesta es necesario, el par que establece la llamada ó \textit{llamante (callee)} crea la oferta llamando a la función \emph{createOffer()} de la API. Esta oferta puede ser modificada por la aplicación si así fuese necesario y se establece como configuración local en ese par con \emph{setLocalDescription()} y se envía al par remoto a través del servidor de señalización utilizado. Al recibir esta oferta el par \textit{llamado (called)} lo utiliza como configuración del otro par con \emph{setRemoteDescription()} y utiliza \emph{createAnswer()} para crear una respuesta apropiada, la cual establece como configuración local (\emph{setLocalDescription()}) y envía la respuesta de vuelta a través del servidor de señalización. El par llamado al recibir la respuesta llama también a \emph{setRemoteDescription()}, y de esta manera ambos lados tienen la información del media propia y la del par remoto.\\ 
 
 
 \subsubsection{Descriptores de Sesión y Máquina de Estados}
@@ -75,7 +75,7 @@ Para satisfacer estas premisas JSEP aborda esto añadiendo los métodos \emph{se
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.9\textwidth]{SDP_offer-answer}
-\caption{Intercambio y establecimiento de los SDP en cada peer.}
+\caption{Intercambio y establecimiento de los SDP en cada par.}
 \label{fig:sdp-oferta-respuesta}
 \end{figure}
 
@@ -134,7 +134,7 @@ a=setup:active
 
 \subsubsection{Interactive Connectivity Establishment (ICE)}
 
-Al igual que los pares tienen que intercambiar información sobre el media, también necesitan hacerlo sobre la información de \textit{red} para que los peer sean visibles entre ellos y puedan alcanzarse. ICE es una técnica usada en aplicaciones de voz, vídeo, peer-2-peer, entre otros que nos permite solucionar problemas de alcance de red entre dos ordenadores. Estos problemas son debidos a que los ordenadores suelen estar dentro de una red privada y/o cortafuegos. Esta técnica nos permite descubrir suficiente información sobre la topología de los otros pares para encontrar una o varias rutas potenciales entre ellos.\\
+Al igual que los pares tienen que intercambiar información sobre el media, también necesitan hacerlo sobre la información de \textit{red} para que los pares sean visibles entre ellos y puedan alcanzarse. ICE es una técnica usada en aplicaciones de voz, vídeo, \emph{peer-2-peer}, entre otros que nos permite solucionar problemas de alcance de red entre dos ordenadores. Estos problemas son debidos a que los ordenadores suelen estar dentro de una red privada y/o cortafuegos. Esta técnica nos permite descubrir suficiente información sobre la topología de los otros pares para encontrar una o varias rutas potenciales entre ellos.\\
 
 Esta información ha de obtenerse de manera local en cada par con el \textit{Agente ICE} asociado a cada objeto RTCPeerConnection. El Agente ICE es responsable de: 
 
@@ -144,11 +144,11 @@ Esta información ha de obtenerse de manera local en cada par con el \textit{Age
 \item Enviar \textit{keepalives}.
 \end{itemize}
 
-Una vez se ha finalizado y configurado el proceso de descripción de sesión, el Agente ICE local comienza automáticamente el proceso de descubrir todos los posibles candidatos en el peer local. Cada candidato posible se le llama \textit{Candidato ICE}:
+Una vez se ha finalizado y configurado el proceso de descripción de sesión, el Agente ICE local comienza automáticamente el proceso de descubrir todos los posibles candidatos en el par local. Cada candidato posible se le llama \textit{Candidato ICE}:
 
 \begin{enumerate}
 \item El Agente ICE pide al sistema operativo las direcciones IP locales.
-\item Consulta a un servidor \emph{STUN (Session Traversal Utilities for NAT}) externo la tupla de dirección IP pública y puerto del peer.
+\item Consulta a un servidor \emph{STUN (Session Traversal Utilities for NAT}) externo la tupla de dirección IP pública y puerto del par.
 \item Consulta a un servidor \emph{TURN (Traversal Using Relays around NAT)} como último recurso. 
 \end{enumerate}
 
@@ -168,7 +168,7 @@ Una vez los dos ICE Agent tienen una lista completa de los Candidatos ICE de amb
 
 Si uno de los pares de candidatos funciona, entonces tenemos una ruta de conexión entre ambos pares. Si todos los candidatos fallan ambas conexiones RTCPeerConnection se marca como fallida o la conexión se hace a través de un servidor TURN.\\
 
-Cuando una conexión se ha establecido correctamente cada Agente ICE continua haciendo peticiones STUN periódicas al otro peer, lo cual sirve también como \textit{keepalives}.\\
+Cuando una conexión se ha establecido correctamente cada Agente ICE continua haciendo peticiones STUN periódicas al otro par, lo cual sirve también como \textit{keepalives}.\\
 
 \begin{normalsize}
 \noindent \textbf{Goteo de candidatos ICE \emph{(ICE Candidate Trickling)}}\\
@@ -204,16 +204,16 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
 
 \subsubsection{Negociación de Vídeo}
 
-La negociación de vídeo es un proceso a través del que cada peer puede indicar al otro qué resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{'a=imageattr'} en el SDP. Cada par puede tener límites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
+La negociación de vídeo es un proceso a través del que cada par puede indicar al otro qué resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{'a=imageattr'} en el SDP. Cada par puede tener límites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
 
 
 \subsection{WebRTC API's}
 
 \subsubsection{getUserMedia} 
 
-getUserMedia es la API encargada de suministrarnos el streaming de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento solo esta disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer streaming de casi cualquier fuente de datos, como un disco duro o sensores conectados al ordenador.\\
+getUserMedia es la API encargada de suministrarnos el flujo de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento sólo está disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer \emph{streaming} de casi cualquier fuente de datos, como un disco duro o sensores conectados al ordenador.\\
 
-Para tener una rica videoconferencia no es suficiente con obtener los streaming en formato \textit{raw} de la cámara o el micrófono. Cada streaming debe ser procesado para aumentar la calidad, sincronizarlos y ajustar el \textit{bitrate} de salida según las fluctuaciones del ancho de banda y la latencia entre peers. A la hora de recibir el streaming nos encontramos en la misma situación pero a la inversa. WebRTC nos da unos motores de procesado de audio y vídeo (figura \ref{fig:audio-video_engines}) que hará todas estas cosas por nosotros.\\
+Para tener una rica videoconferencia no es suficiente con obtener los flujos en crudo \textit{ó formato raw} de la cámara o el micrófono. Cada flujo debe ser procesado para aumentar la calidad, sincronizarlos y ajustar el caudal \textit{(bitrate)} de salida según las fluctuaciones del ancho de banda y la latencia entre pares. A la hora de recibir el flujo nos encontramos en la misma situación pero a la inversa. WebRTC nos da unos motores de procesado de audio y vídeo (figura \ref{fig:audio-video_engines}) que harán todas estas cosas por nosotros.\\
 
 \begin{figure}[htb]
 \centering
@@ -222,12 +222,12 @@ Para tener una rica videoconferencia no es suficiente con obtener los streaming 
 \label{fig:audio-video_engines}
 \end{figure}
 
-getUserMedia es la API que nos suministra las funciones y los motores necesarios para poder cumplir con las especificaciones anteriormente mencionadas, así como manipular o procesar los streaming obtenidos. El objeto \textit{MediaStream} (figura \ref{fig:mediaStream}) es la forma en la que nos suministra los streams esta API.\\
+\emph{getUserMedia} es la API que suministra las funciones y los motores necesarios para poder cumplir con las especificaciones anteriormente mencionadas, así como manipular o procesar los flujos obtenidos. El objeto \textit{MediaStream} (figura \ref{fig:mediaStream}) es la forma en la que nos suministra los flujos esta API.\\
 
 \begin{itemize}
-\item El objeto MediaStream consiste en uno o varias pistas o \textit{tracks} (\textit{MediaStreamTrack}).
+\item El objeto MediaStream consiste en una o varias pistas o \textit{tracks} (\textit{MediaStreamTrack}).
 \item Las pistas que componen el MediaStream están sincronizadas una con la otra.
-\item La salida del MediaStream puede ser enviada a uno o varios destinatarios, como fuente de vídeo local, un peer remoto o procesarlo con funcionalidades que nos proporciona, por ejemplo, HTML5.
+\item La salida del MediaStream puede ser enviada a uno o varios destinatarios, como fuente de vídeo local, un par remoto o procesarlo con funcionalidades que nos proporciona, por ejemplo, HTML5.
 \end{itemize}
 
 \begin{figure}[htb]
@@ -237,9 +237,9 @@ getUserMedia es la API que nos suministra las funciones y los motores necesarios
 \label{fig:mediaStream}
 \end{figure}
 
-Todo el procesado de audio y vídeo, como la cancelación de ruido, ecualización, mejora de la imagen y todas las demás son automáticamente manejadas por os motores de audio y vídeo.\\
+Todo el procesado de audio y vídeo, como la cancelación de ruido, ecualización, mejora de la imagen y todas las demás son automáticamente manejadas por los motores de audio y vídeo.\\
 
-Sin embargo, las características del media stream son restringidas por las capacidades de los dispositivos de entrada: audio mono o stereo, diferentes resoluciones de vídeo según la cámara, etc. Cuando hacemos una petición de media al navegador, getUserMedia nos permite indicar una lista de restricciones obligadas y opcionales.\\
+Sin embargo, las características del flujo audivisual son restringidas por las capacidades de los dispositivos de entrada: audio mono o stereo, diferentes resoluciones de vídeo según la cámara, etc. Cuando hacemos una petición de media al navegador, \emph{getUserMedia} nos permite indicar una lista de restricciones obligadas y opcionales.\\
 
 \begin{lstlisting}[caption=Llamada a función RTCPeerConnection]
 var constraints = {
@@ -265,7 +265,7 @@ function handleUserMediaError(error){
 
 \subsubsection{RTCPeerConnection}
 
-Esta API es la encargada de crear la conexión Peer-2-Peer entre el navegador local y el remoto. Trabaja de manera diferente si es el que hace la llamada (\textit{caller}) y el que la recibe (\textit{called}) debido a la señalización oferta/respuesta que ya hemos visto. Para ello hace uso de sus funciones para completar el proceso de señalización descrito anteriormente.\\
+Esta API es la encargada de crear la conexión \emph{Peer-2-Peer} entre el navegador local y el remoto. Trabaja de manera diferente si es el que hace la llamada (\textit{caller}) y el que la recibe (\textit{called}) debido a la señalización oferta/respuesta que ya hemos visto. Para ello hace uso de sus funciones para completar el proceso de señalización descrito anteriormente.\\
 
 \noindent Es también la encargada de manejar la conexión una vez establecida. Entre las funciones automáticas que realiza se encuentran:\\
 
@@ -273,14 +273,14 @@ Esta API es la encargada de crear la conexión Peer-2-Peer entre el navegador lo
 \item Ocultamiento de paquetes perdidos.
 \item Cancelación de eco.
 \item Adaptación del ancho de banda.
-\item Buffer dinámico en función del jitter o delay.
+\item Buffer dinámico en función del tembleque (\emph{jitter}) o retardo( \emph{delay}).
 \item Control automático de ganancia.
 \item Reducción o eliminación de ruido.
 \end{enumerate}
 
-Es el desarrollador de la aplicación el encargado de llamar a las funciones que componen esta API en el orden, tiempo y forma correcta para cumplir con la arquitectura JSEP y conseguir un intercambio de descriptores de sesión y de ICE Candidates exitoso.\\
+Es el desarrollador de la aplicación el encargado de llamar a las funciones que componen esta API en el orden, tiempo y forma correcta para cumplir con la arquitectura JSEP y conseguir un intercambio de descriptores de sesión y de Candidatos ICE exitoso.\\
 
-\noindent La función admite dos argumentos, los cuales son opcionales: 
+\noindent La función admite dos argumentos opcionales: 
 
 \begin{lstlisting}[caption=Llamada a función RTCPeerConnection]
 var PC = new RTCPeerConnection(ICEconfig, pcConstraints);
@@ -292,13 +292,13 @@ var PC = new RTCPeerConnection(ICEconfig, pcConstraints);
 \noindent \textbf{Protocolos de transporte en tiempo real}\\
 \end{normalsize}
 
-El cerebro humano es muy bueno 'rellenando huecos' pero altamente sensible a los delays. Si perdemos unas muestras de audio o vídeo no nos afecta demasiado en la percepción de lo que estamos recibiendo, pero en cambio añade un delay al audio con respecto al vídeo y hará que ese material nos sea hasta molesto.\\
+El cerebro humano es muy bueno 'rellenando huecos' pero altamente sensible a los retardos. Si perdemos unas muestras de audio o vídeo no nos afecta demasiado en la percepción de lo que estamos recibiendo, pero en cambio añade un retardo al audio con respecto al vídeo y hará que ese material nos sea hasta molesto.\\
 
-Por este motivo las aplicaciones de audio y vídeo en tiempo real están diseñadas para tolerar pérdidas intermitentes de paquetes perdidos. Los codecs pueden rellenar estos pequeños espacios que dejan los paquetes perdidos, muchas veces incluso con muy poco impacto con respecto a la imagen real. Una baja latencia y el \textit{'timeliness'} es mucho mas importante que la fiabilidad (reliability).\\
+Por este motivo las aplicaciones de audio y vídeo en tiempo real están diseñadas para tolerar pérdidas intermitentes de paquetes. Los codecs pueden rellenar estos pequeños espacios que dejan los paquetes perdidos, muchas veces incluso con muy poco impacto con respecto a la imagen real. Una baja latencia y el vicacidad son mucho mas importantes que la fiabilidad (\emph{reliability}).\\
 
-Este requerimiento de timeliness sobre la fiabilidad es la primera razón por la que el protocolo UDP es elegido para el envío de datos en tiempo real. TCP es fiable y tiene entrega ordenada de paquetes. Si uno de ellos se pierde, entonces TCP almacena los paquetes siguientes y para la retransmisión hasta que el paquete perdido es reenviado y recibido. En cambio UDP no garantiza la entrega de paquetes, el orden de entrega, ruta de los paquetes ni control de congestión de red.\\
+Este requerimiento de vicacidad antes que fiabilidad es la primera razón por la que el protocolo UDP es elegido para el envío de datos en tiempo real. TCP es fiable y tiene entrega ordenada de paquetes. Si uno de ellos se pierde, entonces TCP almacena los paquetes siguientes y para la retransmisión hasta que el paquete perdido es reenviado y recibido. En cambio UDP no garantiza la entrega de paquetes, el orden de entrega, la ruta de los paquetes ni control de congestión de red.\\
 
-WebRTC usa UDP como protocolo de transporte. Dadas las características de UDP, ¿podemos simplemente enviar cada paquete según llega y olvidarnos? no, ya que también necesitamos mecanismos para atravesar NAT's y firewalls, negociar los parámetros de cada stream, encriptar los datos de usuario, congestión de red... Para abastecer estas necesidades WebRTC tiene una lista de protocolos y servicios que trabajan por encima de UDP.\\
+WebRTC usa UDP como protocolo de transporte. Dadas las características de UDP, ¿podemos simplemente enviar cada paquete según llega y olvidarnos? no, ya que también necesitamos mecanismos para atravesar NAT's y cortafuegos, negociar los parámetros de cada flujo, encriptar los datos de usuario, congestión de red... Para abastecer estas necesidades WebRTC tiene una lista de protocolos y servicios que trabajan por encima de UDP [(figura \ref{fig:pila_webrtc})].\\
 
 \begin{figure}[htb]
 \centering
@@ -308,36 +308,36 @@ WebRTC usa UDP como protocolo de transporte. Dadas las características de UDP, 
 \end{figure}
 
 
-ICE, STUN y TURN son necesarios para establecer y mantener la conexión Peer-2-Peer sobre UDP, como ya hemos visto en el apartado de señalización.\\
+ICE, STUN y TURN son necesarios para establecer y mantener la conexión \emph{Peer-2-Peer} sobre UDP, como ya hemos visto en el apartado de señalización.\\
 
 \begin{normalsize}
 \noindent \textbf{Entrega de vídeo con SRTP}\\
 \end{normalsize}
 
-WebRTC nos permite adquirir el vídeo/audio y enviarlo para la visualización en el otro peer. También nos permite elegir las características con las que queremos adquirir ese vídeo/audio, pero a partir de ahí es WebRTC y el motor de red el que se encarga del resto. Optimización en la codificación, tratar con paquetes perdidos, jitter, etc, son algunas de las cosas con las que tiene que tratar WebRTC. Por este motivo WebRTC no garantiza la entrega en el otro peer del vídeo con a su máxima resolución.\\
+WebRTC nos permite adquirir el vídeo/audio y enviarlo para la visualización en el otro par. También nos permite elegir las características con las que queremos adquirir ese vídeo/audio, pero a partir de ahí es WebRTC y el motor de red el que se encarga del resto. Optimización en la codificación, tratar con paquetes perdidos, tembleque, etc, son algunas de las cosas con las que tiene que tratar WebRTC. Por este motivo WebRTC no garantiza la entrega en el otro par del vídeo a su máxima resolución.\\
 
-El motor de red tiene su propio flujo de datos sin tener en cuenta desde el comienzo la capacidad de la red ni el bitrate del streaming. Primero empieza enviando el vídeo y el audio a un bitrate bajo (<500kbps) y luego comienza a ajustar la calidad del stream según la capacidad del ancho de banda. Según pueda variar el ancho de banda de la conexión de red así actúa el motor de red para ajustarlo.\\
+El motor de red tiene su propio flujo de datos sin tener en cuenta desde el comienzo la capacidad de la red ni el caudal del flujo. Primero empieza enviando el vídeo y el audio a un bitrate bajo (por debajo de 500kbps) y luego comienza a ajustar la calidad del flujo según la capacidad del ancho de banda. Según pueda variar el ancho de banda de la conexión de red así actúa el motor de red para ajustarlo.\\
 
-SRTP define un formato de paquete estándar para enviar audio y vídeo a través de IP, pero por si mismo no proporciona ningún mecanismo o garantías de entrega en orden, fiabilidad en la entrega o corrección de errores. Simplemente encapsula el vídeo y el audio con adicional metadata. Entre esta metadata cada paquete SRTP tiene un numero de secuencia incremental, una marca de tiempo y un identificador SSRC, lo que permite al peer que recibe el flujo detectar si los paquetes llegan desordenados, sincronizar los diferentes streams y asociar cada paquete al stream correspondiente.\\
+SRTP define un formato de paquete estándar para enviar audio y vídeo a través de IP, pero por si mismo no proporciona ningún mecanismo o garantías de entrega en orden, fiabilidad en la entrega o corrección de errores. Simplemente encapsula el vídeo y el audio con metadata adicional. Entre esta metadata cada paquete SRTP tiene un numero de secuencia incremental, una marca de tiempo y un identificador SSRC, lo que permite al par que recibe el flujo detectar si los paquetes llegan desordenados, sincronizar los diferentes flujos y asociar cada paquete al flujo correspondiente.\\
 
-SRTP usa un protocolo que lo complementa. Este es SRTCP, el cual es el protocolo que controla el numero de paquetes y bytes perdidos, ultimo numero de secuencia recibido, jitter de los paquetes SRTP recibidos y otras estadísticas. Periódicamente estas estadísticas se intercambian entre los peers y la usan para ajustar la tasa de envío, calidad de codificación y otros parámetros.\\
+SRTP usa un protocolo que lo complementa. Este es SRTCP, el cual es el protocolo que controla el número de paquetes y bytes perdidos, último número de secuencia recibido, \emph{jitter} de los paquetes SRTP recibidos y otras estadísticas. Periódicamente estas estadísticas se intercambian entre los pares y la usan para ajustar la tasa de envío, calidad de codificación y otros parámetros.\\
 
 Ambos protocolos corren directamente sobre UDP y trabajan conjuntamente para adaptar y optimizar la conexión.\\
 
 
 \subsubsection{RTCDataChannel}
 
-Llegamos a la tercera y última pero no menos importante API de WebRTC. RTCDataChannel nos da la posibilidad de transferir todo tipo de datos u objetos a través de la conexión Peer-2-Peer establecida con RTCPeerConnection.\\
+Llegamos a la tercera API de WebRTC. RTCDataChannel nos da la posibilidad de transferir todo tipo de datos u objetos a través de la conexión entre pares establecida con RTCPeerConnection.\\
 
-Esta conexión de datos es \textit{full duplex} y nos permite el intercambio de datos, intercambio de archivos, gaming, etc, todo ello con un delay mínimo y sabiendo de la salvaguarda de estos datos, ya que no pasan por ningún servidor intermedio sino que van de navegador a navegador. Las posibilidades son infinitas y se puede adaptar a cualquier necesidad que se tenga para nuestra aplicación.\\
+Esta conexión de datos es \textit{full duplex} y nos permite el intercambio de datos, intercambio de archivos, sincronización de juegos online, etc, todo ello con un retardo mínimo. Las posibilidades son infinitas y se puede adaptar a cualquier necesidad que se tenga para nuestra aplicación.\\
 
 \begin{normalsize}
-\noindent \textbf{Capabilities}\\
+\noindent \textbf{Capacidades}\\
 \end{normalsize}
 
 RTCDataChannel soporta un juego muy flexible de tipos de datos. Soporta \textit{strings}, binarios de JavaScript, \textit{Blobs}, \textit{ArrayBuffer} y \textit{ArrayBufferView}. Según nuestras necesidades nos puede resultar más útil un tipo de datos u otro.\\
 
-Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configurar la conexión de datos de manera \textit{reliable} o \textit{unreliable}. La primera de ellas nos garantiza la entrega de todos los mensajes que enviemos y que los mismos lleguen en el mismo orden que los hemos enviado. Esto provoca una sobrecarga que puede provocar un funcionamiento mas lento además de tener un mayor delay. La segunda de ellas no nos garantiza la entrega de todos los paquetes al otro peer, así como tampoco el orden en el que llegan. Esto reduce el \textit{overhead} permitiéndonos tener una conexión más rápida. SCTP es un protocolo de transporte similar a TCP y UDP que puede funcionar directamente en la cima del protocolo IP. Sin embargo, en WebRTC, SCTP es construido sobre un túnel DTLS, el cuál corre encima de UDP.
+Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configurar la conexión de datos de manera  fiable (\textit{reliable}) o no fiable (\textit{unreliable}). La primera de ellas nos garantiza la entrega de todos los mensajes que enviemos y que los mismos lleguen en el mismo orden que los hemos enviado. Esto provoca una sobrecarga que puede provocar un funcionamiento más lento además de tener un mayola sobrecarga permitiéndonos tener una conexión más rápida. SCTP es un protocolo de transporte similar a TCP y UDP que puede funcionar directamente en la cima del protocolo IP. Sin embargo, en WebRTC, SCTP es construido sobre un túnel DTLS, el cuál corre encima de UDP.
 
 \begin{figure}[htb]
 \centering
@@ -349,26 +349,26 @@ Como protocolo de transporte soporta TCP, UDP y SCTP. Esto nos permite configura
 \noindent Como las API's anteriores llamamos a RTCDataChannel con una variable con opciones de configuración:
 
 \begin{itemize}
-\item Ordered: Booleano para indicar si queremos que nos garantice la entrega ordenada de paquetes.
-\item maxRetransmitTime: Tiempo máximo para intentar retransmitir cada paquete si la entrega falla. (Fuerza el modo \textit{unreliable}).
-\item maxRetransmits: Número máximo de veces que queremos que reenvíe cada paquete si la entrega falla. No puede usarse junto con \textit{maxRetransmitTime}. (Fuerza el modo \textit{unreliable}).
-\item Protocol: Permite el uso de un subprotocolo pero tiene que ser soportado por TCP/UDP.
-\item Negociated: Si se configura en true, elimina la configuración automática del datachannel en el otro peer. Se da por echo que tienes previsto crear el canal de otra manera con el mismo ID.
-\item Id: Permite dar tu propio ID al canal.
+\item \emph{Ordered}: Booleano para indicar si queremos que nos garantice la entrega ordenada de paquetes.
+\item \emph{maxRetransmitTime}: Tiempo máximo para intentar retransmitir cada paquete si la entrega falla. (Fuerza el modo no fiable).
+\item \emph{maxRetransmits}: Número máximo de veces que queremos que reenvíe cada paquete si la entrega falla. No puede usarse junto con \textit{maxRetransmitTime}. (Fuerza el modo no fiable).
+\item \emph{Protocol}: Permite el uso de un subprotocolo pero tiene que ser soportado por TCP/UDP.
+\item \emph{Negociated}: Si se configura a verdadero, elimina la configuración automática del \emph{datachannel} en el otro par. Se da por hecho que tienes previsto crear el canal de otra manera con el mismo ID.
+\item \emph{Id}: Permite dar tu propio ID al canal.
 \end{itemize}
 
 \begin{normalsize}
 \noindent \textbf{Seguridad}\\
 \end{normalsize}
 
-La encriptación es un \textit{mandatory} (obligación) para todos los componentes WebRTC. Tanto audio, vídeo, data e información de la aplicación debe estar encriptado cuando se transmite.. En RTCDatachannel todos los datos son codificados con \textit{Datagram Transport Layer Security (DTLS)}. DTLS es un derivado de SSL por lo que los datos que intercambies irán igual de seguro que si usásemos SSL. Es obligatorio, para que un navegador pueda usar WebRTC, que tenga implementado esta tecnología.\\
+La encriptación es una obligación para todos los componentes WebRTC. Tanto audio, vídeo, data e información de la aplicación debe estar encriptado cuando se transmite.. En \emph{RTCDatachannel} todos los datos son codificados con \textit{Datagram Transport Layer Security (DTLS)}. DTLS es un derivado de SSL por lo que los datos que intercambies irán igual de seguro que si usásemos SSL. Es obligatorio, para que un navegador pueda usar WebRTC, que tenga implementada esta tecnología.\\
 
 
 \begin{normalsize}
 \noindent \textbf{Entrega de datos con SCTP}\\
 \end{normalsize}
 
-Como ya hemos visto en la imagen \ref{fig:pila_webrtc}, RTCDataChannel trabaja con un protocolo llamado \textit{Stream Control Transmission Protocol (SCTP)}, el cual corre sobre DTLS, y este a su vez corre sobre UDP. Recalco esto ya que a diferencia del audio y el vídeo, para enviar data de la aplicación si que necesitamos que lleguen todos los paquetes, por lo que si alguno se ha perdido hay que reenviarlo.\\
+Como ya hemos visto en la figura \ref{fig:pila_webrtc}, \emph{RTCDataChannel} trabaja con un protocolo llamado \textit{Stream Control Transmission Protocol (SCTP)}, el cual corre sobre DTLS, y este a su vez corre sobre UDP. Recalco esto ya que a diferencia del audio y el vídeo, para enviar data de la aplicación sí que necesitamos que lleguen todos los paquetes, por lo que si alguno se ha perdido hay que reenviarlo.\\
 
 \noindent WebRTC requiere de 4 características que debe cumplir el protocolo:
 
@@ -379,44 +379,46 @@ Como ya hemos visto en la imagen \ref{fig:pila_webrtc}, RTCDataChannel trabaja c
 \item Cada canal debe tener entrega fiable.
 \item Cada canal debe tener niveles de prioridad definidos por la aplicación.
 \end{enumerate}
-\item El protocolo debe proveer 'orientado al mensaje', por lo que debe tener fragmentación y reagrupacion de los datos.
+\item El protocolo debe proveer 'orientación al mensaje', por lo que debe tener fragmentación y reagrupacion de los datos.
 \item El protocolo debe tener mecanismos control del flujo y de la congestión.
 \item El protocolo debe tener seguridad y confidencialidad en los datos que se envían.
 \end{enumerate}
 
 La última característica se cumple ya que SCTP corre sobre el túnel DTLS, por lo que los datos que enviemos van encriptados y seguros hasta nuestro destinatario. Por otro lado SCTP, como vemos en la tabla \ref{fig:datachannel_capabilities} permite configurar la fiabilidad y la entrega ordenada de paquetes. SCTP también trocea los datos que queremos enviar y los encapsula en paquetes SCTP de 224 bits.\\
 
-Para el control de flujo y de congestión SCTP tiene un 'handshake' inicial similar al de TCP. Ambos usan la misma ventana inicial de congestión así como la misma lógica de crecimiento y decrecimiento para reducir la congestión una vez la comunicación está activa.\\
+Para el control de flujo y de congestión SCTP tiene un saludo inicial similar al de TCP. Ambos usan la misma ventana inicial de congestión así como la misma lógica de crecimiento y decrecimiento para reducir la congestión una vez la comunicación está activa.\\
 
 
 \section{JdeRobot}
 
-JdeRobot es un proyecto desarrollado por el grupo de robotica de la Universidad Rey Juan Carlos de Madrid. Es un framework para el desarrollo de aplicaciones relacionadas con la rebotica, la visión artificial, automatización del hogar y escenarios con sensores y actuadores, y software inteligente. Esta escrito mayormente en C++ y basado en un entorno de componentes distribuidos. Los componentes, que pueden correr de manera simultanea de manera asíncrona están conectados a través del middleware ICE, el cuál veremos a continuación. Los componentes pueden ser escritos en C++, Java, Python... y todos ellos interoperar a través de interfaces ICE.\\
+JdeRobot es un proyecto desarrollado por el laboratorio de robotica de la Universidad Rey Juan Carlos de Madrid. Es un entorno para el desarrollo de aplicaciones relacionadas con la robotica, la visión artificial, automatización del hogar y escenarios con sensores y actuadores, y software inteligente. Está escrito mayormente en C++ y basado en un entorno de componentes distribuidos. Los componentes, que pueden correr de manera simultánea de manera asíncrona están conectados a través del \emph{middleware} ICE (\emph{Internet Communication Engine}), el cuál veremos a continuación. Los componentes pueden ser escritos en C++, Java, Python... y todos ellos interoperar a través de interfaces ICE.\\
 
-JdeRobot nos simplifica el acceso a unidades hardware como cámaras. Obtener datos de un sensor es tan sencillo como llamar a una función local, y mandar comandos a un motor o actuar se hace también simplemente llamando a una función local. Estos sensores, actuadores o unidades hardware pueden ser simuladas o reales y estar en local o en una red de datos como internet.\\
+JdeRobot simplifica el acceso a unidades hardware como cámaras. Obtener datos de un sensor es tan sencillo como llamar a una función local, y mandar comandos a un motor o actuar se hace también simplemente llamando a una función local. Estos sensores, actuadores o unidades hardware pueden ser simuladas o reales y estar en local o en una red de datos como internet.\\
 
-Incluye numerosas librerías y herramientas que podemos usar para desarrollar nuestra propia aplicación o para controlar nuestro propio robot. JdeRobot es \textit{open source}, bajo licencia GPL y LGPL. También utiliza software de terceros como el simulador Gazebo, ROS, GTK, OpenCV...\\
+Incluye numerosas librerías y herramientas que podemos usar para desarrollar nuestra propia aplicación o para controlar nuestro propio robot. JdeRobot es software libre, bajo licencia GPL y LGPL. También utiliza software de terceros como el simulador Gazebo, ArDroneServer ROS, GTK, OpenCV...\\
+
+La versión utilizada en el proyecto ha sido la 5.3.1, última versión estable en la fecha del comienzo del mismo. Las herramientas utilizadas para el proyecto han sido el plugin de Gazebo, para intercumunicarnos con el simulador y el componente ArDroneServer con el que nos conectamos al drone real para hacer las pruebas y experimentos.\\
 
 \section{ICE y ICEJS}
 
-ICE es un framework RPC orientado a objetos desarrollado por Zeroc con soporte para lenguajes como C++, C\#, Java, JavaScript, y Python entre otros, y SO's como Linux, Mac OS X y Windows, que nos permite crear conexiones e interacciones de red entre maquinas con servidores corriendo en diferentes lenguajes y/o SO's.\\
+ICE o\emph{Internet Communication Engine} es un entorno RPC orientado a objetos desarrollado por Zeroc con soporte para lenguajes como C++, C\#, Java, JavaScript, y Python entre otros, y SO's como Linux, Mac OS X y Windows, que nos permite crear conexiones e interacciones de red entre máquinas con servidores corriendo en diferentes lenguajes y/o SO's.\\
 
 ICEJS, o ICE for JavaScript es un \textit{plugin} que se le puede añadir a ICE el cual añade la funcionalidad de \textit{websockets} lo que nos permite conectar navegadores a través de JavaScript a los protocolos comunes de ICE. \\
 
-En versiones más actuales ICEJS viene incorporado en la suite principal de ICE, pero nosotros usaremos la versión 3.5 que es la que soporta la suite de JdeRobot con la que trabajamos, por lo que debemos instar el plugin una vez instalado ICE.\\
+En versiones más actuales ICEJS viene incorporado en la suite principal de ICE, pero nosotros utilizaremos la versión 3.5 que es la que soporta la suite de JdeRobot con la que trabajamos, por lo que debemos instalar el plugin una vez instalado ICE.\\
 
-\section{Gazebo}
+\section{Simulador robótico Gazebo}
 
-Gazebo es un simulador 3D de robótica desarrollado por la \textit{Open Source Robotics Foundation (OSRF)}. Es multiplataforma y entre otras cosas nos permite diseñar y crear nuestro propio robot y escenarios realistas, con obstáculos y objetos, para probar nuestros algoritmos de una forma prácticamente exacta a las condiciones que nos vamos a encontrar en el mundo real. Para conseguir este realismo y potencia Gazebo cuenta con un motor físico para la iluminación, gravedad, inercia... Uno de los puntos más favorables de este simulador es que es libre y tiene una comunidad muy numerosa y participativa.\\
+Gazebo es un simulador 3D de robótica desarrollado por la \textit{Open Source Robotics Foundation (OSRF)}. Es multiplataforma y entre otras cosas nos permite diseñar y crear nuestro propio robot y escenarios realistas, con obstáculos y objetos, para probar nuestros algoritmos de una forma muy pparecida a las condiciones que nos vamos a encontrar en el mundo real. Para conseguir este realismo y potencia Gazebo cuenta con un motor físico para la mecánica, iluminación, gravedad, inercia... Uno de los puntos más favorables de este simulador es que es libre y tiene una comunidad muy numerosa y participativa.\\
 
 JdeRobot tiene desarrollado el componente para Gazebo que contiene el modelo, el mundo y los plugin necesarios para simular el ArDrone de Parrot, de tal manera que podremos testear el código para ir puliendo y conseguir que sea lo suficientemente estable para posteriormente poder probarlo en el drone real.
 
 
 \section{ARDrone de Parrot}
 
-El Parrot ARDrone es un drone que comercializa la marca Parrot el cuál puede ser volado con una aplicación desde el móvil. El Drone crea una red WiFi, a la cuál te conectas con tu teléfono y desde la aplicación se tiene una comunicación directa con el Drone.\\
+El Parrot ARDrone es un drone que comercializa la marca Parrot el cuál puede ser teleoperado con una aplicación desde el dispositivos móviles. El drone crea una red WiFi, a la cuál conectas tu teléfono o tablet y desde la aplicación se tiene una comunicación directa con el drone.\\
 
-A parte de esto Parrot tiene una SDK para desarrolladores la cuál es libre y está muy bien documentada para que quien quiera pueda desarrollar sus aplicaciones. Esta SDK es sobre la que los compañeros de JdeRobot han trabajado para crear con el middleware ICE, del que ya hemos hablado, una pasarela que nos da conectividad entre el drone real y la aplicación/componente que estemos desarrollando o usando.
+A parte de esto Parrot tiene una SDK para desarrolladores la cuál es libre ofrece con el middleware ICE, del que ya hemos hablado, una pasarela que nos da conectividad entre el drone real y la aplicación/componente que estemos desarrollando o usando.
 
 
 
