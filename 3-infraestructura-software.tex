@@ -3,6 +3,74 @@
 Una vez presentados los objetivos que tenemos marcados hay que echar una mirada a las tecnologías software y hardware que hemos utilizado como base en el proyecto. La más importante y sobre la que está centrado el proyecto es WebRTC. Además hemos emleado, como apoyo para cubrir las partes que WebRTC no llega, ICEJS junto con la plataforma robótica JdeRobot. Estas tecnologías junto con el simulador robótico Gazebo nos ha permitido probar, depurar y mejorar el código antes de realizar los experimentos sobre el drone real.
 
 
+\section{ARDrone de Parrot}
+
+El Parrot ARDrone es un drone que comercializa la marca Parrot el cuál puede ser teleoperado con una aplicación desde el dispositivos móviles. El drone crea una red WiFi, a la cuál conectas tu teléfono o tablet iOS ó Android y desde la aplicación, suministrada también por ña marca Parrot,  se tiene una comunicación directa con el drone.\\
+
+A parte de esto Parrot tiene una SDK para desarrolladores la cuál es libre y está muy bien documentada para que quien quiera pueda desarrolar sus aplicaciones. Esta SDK es sobre la que JdeRobot ofrece, junto con el middleware ICE (\emph{Internet Communication Engine}), una pasarela que nos da conectividad entre el drone real y la aplicación/componente que estemos desarrollando o usando.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{ardrone_movil}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{ardrone}
+\caption{ArDrone de Parrot}
+\label{fig:ardrone}
+\end{figure}
+
+
+\newpage
+\section{Simulador robótico Gazebo}
+
+Gazebo es un simulador 3D de robótica desarrollado por la \textit{Open Source Robotics Foundation (OSRF)}. Es multiplataforma y entre otras cosas nos permite diseñar y crear nuestro propio robot y escenarios realistas, con obstáculos y objetos, para probar nuestros algoritmos de una forma muy parecida a las condiciones que nos vamos a encontrar en el mundo real, pero sin poner en peligro ni nuestros robots ni a ninguna persona cercana en caso de que se comporte de una forma inesperada. Para conseguir este realismo y potencia Gazebo cuenta con un motor físico para la mecánica, iluminación, gravedad, inercia... Uno de los puntos más favorables de este simulador es que es libre y tiene una comunidad muy numerosa y participativa.\\
+
+JdeRobot tiene desarrollado el componente para Gazebo que contiene el modelo, el mundo y los plugin necesarios para simular el ArDrone de Parrot, de tal manera que podremos testear el código para ir puliendo y conseguir que sea lo suficientemente estable para posteriormente poder probarlo en el drone real.\\
+
+Se ha usado la versión 5.1 del simulador, la cuál es última version estable a la fecha de comienzo y 100% compatible con el plugin de JdeRobot mencionado, el cuál se explica a continuación más en profundidad.\\
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{gazebo}
+\caption{Simulador Gazebo}
+\label{fig:gazebo}
+\end{figure}
+
+
+\section{JdeRobot}
+
+JdeRobot es un proyecto desarrollado por el laboratorio de robotica de la Universidad Rey Juan Carlos de Madrid. Es un entorno para el desarrollo de aplicaciones relacionadas con la robotica, la visión artificial, automatización del hogar y escenarios con sensores y actuadores, y software inteligente. Está escrito mayormente en C++ y basado en un entorno de componentes distribuidos. Los componentes, que pueden correr de manera simultánea de manera asíncrona están conectados a través del \emph{middleware} ICE, el cuál veremos a continuación. Los componentes pueden ser escritos en C++, Java, Python... y todos ellos interoperar a través de interfaces ICE.\\
+
+JdeRobot simplifica el acceso a unidades hardware como cámaras. Obtener datos de un sensor es tan sencillo como llamar a una función local, y mandar comandos a un motor o actuar se hace también simplemente llamando a una función local. Estos sensores, actuadores o unidades hardware pueden ser simuladas o reales y estar en local o en una red de datos como internet.\\
+
+Incluye numerosas librerías y herramientas que podemos usar para desarrollar nuestra propia aplicación o para controlar nuestro propio robot. JdeRobot es software libre, bajo licencia GPL y LGPL. También utiliza software de terceros como el simulador Gazebo, ArDroneServer ROS, GTK, OpenCV...\\
+
+La versión utilizada en el proyecto ha sido la 5.3.1, última versión estable en la fecha del comienzo del mismo. Dentro de las herramientas utilizadas en el proyecto hemos hecho uso básicamente de dos:
+
+\begin{itemize}
+\item \emph{Plugin de Gazebo}: Desarrollado por JdeRobot para añadir el ArDrone a Gazebo con las mismas funcionalidades al drone real. Este plugin nos permite abstraernos de las conexiones a mas bajo nivel, como la lectura de sensores o en envío de comandos a los motores, simplificando el acceso a los mismo y obteniendo los datos con una simple llamada a función.
+\item \emph{ArDroneServer}: Este componente es el encargado de comunicarse directamente con el ArDrone real, ejecutar las funciones y comandos de bajo nivel para obtener los datos y valores de los sensores, y ejecutar las funciones neccesarias sobre los motores y actuadores según las órdenes de movimiento dadas. 
+\end{itemize}
+
+
+
+\section{ICE}
+
+ICE o\emph{Internet Communication Engine} es un entorno RPC orientado a objetos desarrollado por Zeroc con soporte para lenguajes como C++, C\#, Java, JavaScript, y Python entre otros, y SO's como Linux, Mac OS X y Windows, que nos permite crear conexiones e interacciones de red entre máquinas con servidores corriendo en diferentes lenguajes y/o SO's. Estas conexiones pueden ser síncronas o asíncronas, usando variedad de protocolos de red como TCP, UDP ó SSL/TTS\\
+
+ICEJS, o ICE for JavaScript es un \textit{plugin} que se le puede añadir a ICE el cual añade la funcionalidad de conexiones mediante \textit{websockets} lo que nos permite conectar navegadores a través de JavaScript a los protocolos mas comunes de ICE. \\
+
+En versiones más actuales ICEJS viene incorporado en la suite principal de ICE, pero nosotros hemos usado la versión 3.5 que es la que soporta la suite de JdeRobot con la que trabajamos, por lo que debemos instalar el plugin una vez instalado ICE.\\
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{esquema_icejs}
+\caption{Esquema de ICE JS}
+\label{fig:esquema_icejs}
+\end{figure}
+
 \section{WebRTC}
 
 Web Real-Time Communication (WebRTC) es un proyecto de software libre y gratuito que nos permite tener en el navegador tecnología en tiempo real ('Real-Time Communication' ó RTC), sin plugins, a través de varias APIs de JavaScript. Facilita las llamadas de voz, videollamadas, chat y compartición de archivos y datos. WebRTC es una tecnología entre pares, por lo que nos permite desarrollar estas aplicaciones para que funcionen directamente desde un navegador a otro \emph{sin pasar por servidor intermedio.}\\
@@ -387,43 +455,5 @@ Como ya hemos visto en la figura \ref{fig:pila_webrtc}, \emph{RTCDataChannel} tr
 La última característica se cumple ya que SCTP corre sobre el túnel DTLS, por lo que los datos que enviemos van encriptados y seguros hasta nuestro destinatario. Por otro lado SCTP, como vemos en la tabla \ref{fig:datachannel_capabilities} permite configurar la fiabilidad y la entrega ordenada de paquetes. SCTP también trocea los datos que queremos enviar y los encapsula en paquetes SCTP de 224 bits.\\
 
 Para el control de flujo y de congestión SCTP tiene un saludo inicial similar al de TCP. Ambos usan la misma ventana inicial de congestión así como la misma lógica de crecimiento y decrecimiento para reducir la congestión una vez la comunicación está activa.\\
-
-
-\section{JdeRobot}
-
-JdeRobot es un proyecto desarrollado por el laboratorio de robotica de la Universidad Rey Juan Carlos de Madrid. Es un entorno para el desarrollo de aplicaciones relacionadas con la robotica, la visión artificial, automatización del hogar y escenarios con sensores y actuadores, y software inteligente. Está escrito mayormente en C++ y basado en un entorno de componentes distribuidos. Los componentes, que pueden correr de manera simultánea de manera asíncrona están conectados a través del \emph{middleware} ICE (\emph{Internet Communication Engine}), el cuál veremos a continuación. Los componentes pueden ser escritos en C++, Java, Python... y todos ellos interoperar a través de interfaces ICE.\\
-
-JdeRobot simplifica el acceso a unidades hardware como cámaras. Obtener datos de un sensor es tan sencillo como llamar a una función local, y mandar comandos a un motor o actuar se hace también simplemente llamando a una función local. Estos sensores, actuadores o unidades hardware pueden ser simuladas o reales y estar en local o en una red de datos como internet.\\
-
-Incluye numerosas librerías y herramientas que podemos usar para desarrollar nuestra propia aplicación o para controlar nuestro propio robot. JdeRobot es software libre, bajo licencia GPL y LGPL. También utiliza software de terceros como el simulador Gazebo, ArDroneServer ROS, GTK, OpenCV...\\
-
-La versión utilizada en el proyecto ha sido la 5.3.1, última versión estable en la fecha del comienzo del mismo. Las herramientas utilizadas para el proyecto han sido el plugin de Gazebo, para intercumunicarnos con el simulador y el componente ArDroneServer con el que nos conectamos al drone real para hacer las pruebas y experimentos.\\
-
-\section{ICE y ICEJS}
-
-ICE o\emph{Internet Communication Engine} es un entorno RPC orientado a objetos desarrollado por Zeroc con soporte para lenguajes como C++, C\#, Java, JavaScript, y Python entre otros, y SO's como Linux, Mac OS X y Windows, que nos permite crear conexiones e interacciones de red entre máquinas con servidores corriendo en diferentes lenguajes y/o SO's.\\
-
-ICEJS, o ICE for JavaScript es un \textit{plugin} que se le puede añadir a ICE el cual añade la funcionalidad de \textit{websockets} lo que nos permite conectar navegadores a través de JavaScript a los protocolos comunes de ICE. \\
-
-En versiones más actuales ICEJS viene incorporado en la suite principal de ICE, pero nosotros utilizaremos la versión 3.5 que es la que soporta la suite de JdeRobot con la que trabajamos, por lo que debemos instalar el plugin una vez instalado ICE.\\
-
-\section{Simulador robótico Gazebo}
-
-Gazebo es un simulador 3D de robótica desarrollado por la \textit{Open Source Robotics Foundation (OSRF)}. Es multiplataforma y entre otras cosas nos permite diseñar y crear nuestro propio robot y escenarios realistas, con obstáculos y objetos, para probar nuestros algoritmos de una forma muy pparecida a las condiciones que nos vamos a encontrar en el mundo real. Para conseguir este realismo y potencia Gazebo cuenta con un motor físico para la mecánica, iluminación, gravedad, inercia... Uno de los puntos más favorables de este simulador es que es libre y tiene una comunidad muy numerosa y participativa.\\
-
-JdeRobot tiene desarrollado el componente para Gazebo que contiene el modelo, el mundo y los plugin necesarios para simular el ArDrone de Parrot, de tal manera que podremos testear el código para ir puliendo y conseguir que sea lo suficientemente estable para posteriormente poder probarlo en el drone real.
-
-
-\section{ARDrone de Parrot}
-
-El Parrot ARDrone es un drone que comercializa la marca Parrot el cuál puede ser teleoperado con una aplicación desde el dispositivos móviles. El drone crea una red WiFi, a la cuál conectas tu teléfono o tablet y desde la aplicación se tiene una comunicación directa con el drone.\\
-
-A parte de esto Parrot tiene una SDK para desarrolladores la cuál es libre ofrece con el middleware ICE, del que ya hemos hablado, una pasarela que nos da conectividad entre el drone real y la aplicación/componente que estemos desarrollando o usando.
-
-
-
-
-
-
 
 
