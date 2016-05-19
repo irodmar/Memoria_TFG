@@ -1,9 +1,9 @@
 \chapter{Infraestructura Software} 
 
-Una vez presentados los objetivos que tenemos marcados hay que echar una mirada a las tecnologías software y hardware que hemos utilizado como base en el proyecto. La más importante y sobre la que está centrado el proyecto es WebRTC. Además hemos emleado, como apoyo para cubrir las partes que WebRTC no llega, ICEJS junto con la plataforma robótica JdeRobot. Estas tecnologías junto con el simulador robótico Gazebo nos ha permitido probar, depurar y mejorar el código antes de realizar los experimentos sobre el drone real.
+Una vez presentados los objetivos que tenemos marcados hay que echar una mirada a las tecnologías software y hardware que hemos utilizado como base en el proyecto. La más importante y sobre la que está centrado el proyecto es WebRTC. Además hemos emleado, como apoyo para cubrir las partes que WebRTC no llega, ICEJS junto con la plataforma robótica JdeRobot. Estas tecnologías junto con el simulador robótico Gazebo nos ha permitido probar, depurar y mejorar el código antes de realizar los experimentos sobre el drone real ArDrone, el cuál presento a continuación.
 
 
-\section{ARDrone de Parrot}
+\section{ArDrone de Parrot}
 
 El Parrot ARDrone es un drone que comercializa la marca Parrot el cuál puede ser teleoperado con una aplicación desde el dispositivos móviles. El drone crea una red WiFi, a la cuál conectas tu teléfono o tablet iOS ó Android y desde la aplicación, suministrada también por ña marca Parrot,  se tiene una comunicación directa con el drone.\\
 
@@ -20,6 +20,8 @@ A parte de esto Parrot tiene una SDK para desarrolladores la cuál es libre y es
 \caption{ArDrone de Parrot}
 \label{fig:ardrone}
 \end{figure}
+
+Para simular este drone de la manera mas realista y realizar las pruebas de manera virtual, nos vamos a apoyar en el simulador robótico Gazebo.
 
 
 \newpage
@@ -38,6 +40,7 @@ Se ha usado la versión 5.1 del simulador, la cuál es última version estable a
 \label{fig:gazebo}
 \end{figure}
 
+Este simulador junto con los plugins, mundos y mapas creados por JdeRobot es una poderosa heramienta que nos será muy útil para nuestro proyecto.
 
 \section{JdeRobot}
 
@@ -91,25 +94,23 @@ Que WebRTC no necesita un servidor no es del todo cierto, ya que sí que necesit
 \item \emph{RTCDataChannel}: comunicación de cualquier otro tipo de datos.
 \end{itemize}
 
-A continuación vamos a desgranar y explicar cómo funciona el intercambio de paquetes de señalización así como cada una de las API's que componen WebRTC.\\
-
 En este momento WebRTC es accesible para todos los usuarios a través de navegadores como Chrome o Firefox. Sin embargo, WebRTC está aún en construcción, tanto la forma de implementar las API's que tiene cada navegador como la propia norma, con sus protocolos de funcionamiento. Como resultado todo lo que exponga sobre estas API's se refiere a la situación actual y puede cambiar en el futuro.\\
 
+A continuación vamos a desgranar y explicar cómo funciona el intercambio de paquetes de señalización así como cada una de las API's que componen WebRTC.\\
 
-
-\subsection{Señalización} 
-\label{subsec:senalizacion}
+\section{WebRTC: Señalización} 
+\label{sec:senalizacion}
 
 Señalización es el proceso de intercambio de datos y metadatos necesarios para coordinar una llamada entre navegadores con WebRTC. Para realizar esta labor WebRTC necesita de la ayuda de un servidor externo ya que la norma deja el campo de la señalización a la capa de la aplicación.\\
 
-Entre las labores de la señalización se encuentran la detección de los pares, el intercambio de paquetes de control de la sesión como los candidatos \emph{ICE (Internet Communication Engine)} y los \emph{SDP (Session Description Protocol)}, las prestaciones que puede darnos cada par así como cualquier otro dato o paquete necesario para realizar este 'apretón de manos' inicial.\\
+Los objetivos básicos de la señalización son dos, el intercambios de los datos necesarios para establecer un flujo audiovisual y el intercambio de direcciones de red para que los pares sean alcanzables. Entre las labores para satisfacer estos objetivos se encuentran la detección de los pares, el intercambio de paquetes de control de la sesión como los candidatos \emph{ICE (Internet Communication Engine)} y los \emph{SDP (Session Description Protocol)}, las prestaciones que puede darnos cada par así como cualquier otro dato o paquete necesario para realizar este 'apretón de manos' inicial.\\
 
 WebRTC no especifica qué tipo de servidor hemos de usar para estas funciones. Esto es debido a que diferentes aplicaciones pueden preferir distintos servidores básicos o personalizados según sus necesidades. La única restricción es el uso de la arquitectura JSEP, la cuál especifica cómo debe ser la secuencia de señalización para tener una llamada exitosa.\\
 
 
 El servidor debe usar la arquitectura \emph{JSEP (JavaScript Session Establishment Protocol)}. Esta arquitectura elimina al navegador de casi todo el flujo de señalización, el cual se maneja desde JavaScript haciendo uso de dos interfaces: transfiriendo los SDP local/remoto e interactuando con la máquina de estados ICE. Esta arquitectura nos evita, entre otras cosas, que el navegador tenga que guardar estados de sesión, de tal manera que se pueden guardar en el servidor y evitar problemas si la página se recarga, por ejemplo. \\
 
-JSEP no establece un modelo particular de señalización más allá de usar uno capaz de realizar el intercambio de los SDP y ICE según la norma RFC3264 de oferta/respuesta, [(figura \ref{fig:oferta-respuesta})] de tal manera que ambas partes de la llamada sepan cómo actuar en cada momento. JSEP nos da los mecanismos necesarios para crear estas ofertas, así como aplicarlas a las sesión.\\
+JSEP no establece un modelo particular de señalización más allá de usar uno capaz de realizar el intercambio de los SDP y ICE según la norma RFC3264 de \emph{oferta/respuesta}, [(figura \ref{fig:oferta-respuesta})] de tal manera que ambas partes de la llamada sepan cómo actuar en cada momento. JSEP nos da los mecanismos necesarios para crear estas ofertas, así como aplicarlas a las sesión.\\
 
 \begin{figure}[htb]
 \centering
@@ -121,16 +122,17 @@ JSEP no establece un modelo particular de señalización más allá de usar uno 
 
 El orden en que se llaman a estos mecanismos o funciones de la API es importante, por lo que la aplicación deberá saber el orden en el que tiene que llamar a cada una, convertir las ofertas en mensajes que entienda el protocolo de señalización elegido y hacer la conversión inversa con los mensajes que se reciben para obtener ofertas que entiendan as API's.\\
 
-El manejo de las descripciones de sesión es simple y sencillo. Siempre que el intercambio de una oferta/respuesta es necesario, el par que establece la llamada ó \textit{llamante (callee)} crea la oferta llamando a la función \emph{createOffer()} de la API. Esta oferta puede ser modificada por la aplicación si así fuese necesario y se establece como configuración local en ese par con \emph{setLocalDescription()} y se envía al par remoto a través del servidor de señalización utilizado. Al recibir esta oferta el par \textit{llamado (called)} lo utiliza como configuración del otro par con \emph{setRemoteDescription()} y utiliza \emph{createAnswer()} para crear una respuesta apropiada, la cual establece como configuración local (\emph{setLocalDescription()}) y envía la respuesta de vuelta a través del servidor de señalización. El par llamado al recibir la respuesta llama también a \emph{setRemoteDescription()}, y de esta manera ambos lados tienen la información del media propia y la del par remoto.\\ 
+
+\subsection{Estableciendo el Flujo Audiovisual: Descriptores de Sesión y Máquina de Estados}
 
 
-\subsubsection{Descriptores de Sesión y Máquina de Estados}
+El manejo de las descripciones de sesión es simple y sencillo. Siempre que el intercambio de una oferta/respuesta es necesario, el par que establece la llamada ó \textit{llamante (callee)} crea la oferta llamando a la función \emph{createOffer()} de la API. Esta oferta puede ser modificada por la aplicación si así fuese necesario y se establece como configuración local en ese par con \emph{setLocalDescription()} y se envía al par remoto a través del servidor de señalización utilizado. Al recibir esta oferta el par \textit{llamado (called)} lo utiliza como configuración del otro par con \emph{setRemoteDescription()} y utiliza \emph{createAnswer()} para crear una respuesta apropiada, la cual establece como configuración local (\emph{setLocalDescription()}) y envía la respuesta de vuelta a través del servidor de señalización. El par llamado al recibir la respuesta llama también a \emph{setRemoteDescription()}, y de esta manera ambos lados tienen la información del descriptor de sesión propio y el del par remoto.\\ 
 
-Para establecer un intercambio de media, el \textit{agente de usuario )user agent)} del navegador necesita parámetros específicos para indicar al par remoto qué es lo que va a transmitir, de la misma manera que necesita saber el media que va a recibir para saber cómo decodificarlo y manejarlo. Estos datos se determinan en la descripción de sesión (SDP), los cuales se intercambian en ofertas/respuestas usando las API's JSEP como ya hemos visto anteriormente.\\
+Para establecer un intercambio de flujo audiovisual, el \textit{agente de usuario (user agent)} del navegador necesita parámetros específicos para indicar al par remoto qué es lo que va a transmitir, de la misma manera que necesita conocer los parámetros del flujo audiovisual que va a recibir para saber cómo decodificarlo y manejarlo. Estos datos se determinan en la descripción de sesión (SDP), los cuales se intercambian en ofertas/respuestas usando las API's JSEP como ya hemos visto anteriormente.\\
 
-Si el SDP pertenece a la parte local o remota tiene su importancia. Una vez realizado el intercambio, cada parte mirará la lista de codecs soportados por él mismo y por la otra parte, y el cruce de los resultados determinará qué codecs debe usar para enviar y cuál para dgerir lo recibido. Los parámetros exactos de la transmisión sólo se pueden saber una vez la oferta y la respuesta han sido intercambiados. Sin embargo, hay ocasiones en las que el llamante o el que hace la oferta puede recibir flujo audiovisual después de enviar la oferta pero antes de recibir la respuesta proveniente del otro par. Para procesar este flujo audiovisual de manera adecuada, el manejador del llamado debe conocer los detalles de la oferta antes de que la respuesta llegue.\\
+Si el SDP pertenece a la parte local o remota tiene su importancia. Una vez realizado el intercambio, cada parte mirará la lista de codecs soportados por él mismo y por la otra parte, y el cruce de los resultados determinará qué codecs debe usar para enviar y cuál para digerir lo recibido. Los parámetros exactos de la transmisión sólo se pueden saber una vez la oferta y la respuesta han sido intercambiados. Sin embargo, hay ocasiones en las que el llamante o el que hace la oferta puede recibir flujo audiovisual después de enviar la oferta pero antes de recibir la respuesta proveniente del otro par. Para procesar este flujo audiovisual de manera adecuada, el manejador del llamante debe conocer los detalles de la oferta antes de que la respuesta llegue.\\
 
-Por lo tanto, para manejar los descriptores de sesión de manera correcta, los uagentes de usuario necesitan:
+Por lo tanto, para manejar los descriptores de sesión de manera correcta, los agentes de usuario necesitan:
 
 \begin{itemize}
 \item Conocer si el descriptor de sesión pertenece a la parte local o remota.
@@ -138,7 +140,7 @@ Por lo tanto, para manejar los descriptores de sesión de manera correcta, los u
 \item Permitir a la oferta ser especificada independientemente de la respuesta.
 \end{itemize}
 
-Para satisfacer estas premisas JSEP aborda esto añadiendo los métodos \emph{setLocalDescription()} y \emph{setRemoteDescription()} y teniendo un campo en los descriptores de sesión indicando el tipo de sesión que se suministra. En la figura \ref{fig:sdp-oferta-respuesta} podemos ver el esquema de intercambio de paquetes SDP.\\
+Para satisfacer estas premisas JSEP aborda esto añadiendo los métodos \emph{setLocalDescription()} y \emph{setRemoteDescription()} y teniendo un campo en los descriptores de sesión indicando el tipo de sesión que se suministra. En la figura \ref{fig:sdp-oferta-respuesta} podemos ver el esquema de intercambio de paquetes SDP y el ajuste de los mismos en cada par segun corresponde.\\
 
 \begin{figure}[htb]
 \centering
@@ -150,9 +152,12 @@ Para satisfacer estas premisas JSEP aborda esto añadiendo los métodos \emph{se
 JSEP también permite el uso de respuestas provisionales. Estas respuestas permiten al par remoto o llamado comunicar e informar de los parámetros iniciales de la sesión al llamante, de tal manera que la sesión puede comenzar mientras se espera una respuesta final posteriormente. Este concepto es importante en el modelo oferta/respuesta, ya que al recibir una de estas respuestas el llamante puede liberar y usar más recursos como extra \textit{candidatos ICE, candidatos TURN} o vídeo decodecs. Estas respuestas provisionales no provocan ningún tipo de des-asignación o problema, por lo que pueden ser recibidas a lo largo de la llamada para estabilizar o mejorar la misma según varíen las condiciones del ancho de banda de uno de los pares, por ejemplo.\\
 
 
+El cometido principal del intercambio de SDP es la negociacion de video. Es un proceso a través del que cada par puede indicar al otro qué resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través del atributo \textit{'a=imageattr'} en el SDP. Cada par puede tener límites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
+
+
 \subsubsection{Formato de los Descriptores de Sesión}
 
-En la especificación WebRTC, los descriptores de sesión o session descriptions están formados por mensajes \textit{SDP (Session Description Protocol)}. Este formato no es el más óptimo para manipular con JavaScript, pero es el más popular y aceptado en el campo de las comunicaciones audiovisuales en tiempo real. Este formato es el que usa JSEP para formar e intercambiar los descriptores de sesión.\\
+En la especificación WebRTC, los descriptores de sesión o \emph{session descriptions} están formados por mensajes \textit{SDP (Session Description Protocol)}. Este formato no es el más óptimo para manipular con JavaScript, pero es el más popular y aceptado en el campo de las comunicaciones audiovisuales en tiempo real. Este formato es el que usa JSEP para formar e intercambiar los descriptores de sesión.\\
 
 Para facilitar el procesado en JavaScript y una futura flexibilidad, los SDP los genera la API como un objeto o \textit{blob}. Si en un futuro WebRTC soporta algún formato nuevo para los descriptores de sesión, estos serán fácilmente añadidos y habilitados para poder usarlos en nuestras aplicación en vez de SDP.\\
 
@@ -200,7 +205,8 @@ a=setup:active
 \end{lstlisting}
 
 
-\subsubsection{Interactive Connectivity Establishment (ICE)}
+
+\subsection{Intercambio de los Datos de Red: Interactive Connectivity Establishment (ICE)}
 
 Al igual que los pares tienen que intercambiar información sobre el media, también necesitan hacerlo sobre la información de \textit{red} para que los pares sean visibles entre ellos y puedan alcanzarse. ICE es una técnica usada en aplicaciones de voz, vídeo, \emph{peer-2-peer}, entre otros que nos permite solucionar problemas de alcance de red entre dos ordenadores. Estos problemas son debidos a que los ordenadores suelen estar dentro de una red privada y/o cortafuegos. Esta técnica nos permite descubrir suficiente información sobre la topología de los otros pares para encontrar una o varias rutas potenciales entre ellos.\\
 
@@ -232,15 +238,13 @@ Como podemos ver, ICE necesita de servidores externos para obtener la tupla de d
  
 Cuando un Candidato ICE es descubierto, se envía al par remoto y una vez allí, se añade en RTCPeerConnection la información de sesión que contiene ese paquete con \textit{setRemoteDescription()}, de tal manera que el Agente ICE puede empezar a hacer pruebas de conectividad para ver si puede alcanzar al otro par.\\
 
-Una vez los dos ICE Agent tienen una lista completa de los Candidatos ICE de ambos pares, cada agente comprueba pareando ambas lista cuales funcionan. Para ello tienen una planificación de prioridades: primero direcciones IP locales, luego IP públicas y finalmente si ambas fallan servidor TURN. Cada comprobación es una petición/respuesta STUN que el cliente realiza con un particular candidato enviando una petición STUN desde el candidato local al candidato remoto.\\
+Una vez los dos Agentes ICE tienen una lista completa de los Candidatos ICE de ambos pares, cada agente comprueba pareando ambas lista cuales funcionan. Para ello tienen una planificación de prioridades: primero direcciones IP locales, luego IP públicas y finalmente si ambas fallan servidor TURN. Cada comprobación es una petición/respuesta STUN que el cliente realiza con un particular candidato enviando una petición STUN desde el candidato local al candidato remoto.\\
 
 Si uno de los pares de candidatos funciona, entonces tenemos una ruta de conexión entre ambos pares. Si todos los candidatos fallan ambas conexiones RTCPeerConnection se marca como fallida o la conexión se hace a través de un servidor TURN.\\
 
 Cuando una conexión se ha establecido correctamente cada Agente ICE continua haciendo peticiones STUN periódicas al otro par, lo cual sirve también como \textit{keepalives}.\\
 
-\begin{normalsize}
-\noindent \textbf{Goteo de candidatos ICE \emph{(ICE Candidate Trickling)}}\\
-\end{normalsize}
+\subsubsection{Goteo de Candidatos ICE \emph{(ICE Candidate Trickling)}}
 
 Recopilar IP's locales es rápido, pero conseguir las IP's publicas con sus puertos a través de servidores STUN requiere de un intercambio de paquetes entre el par y el servidor STUN y por consiguiente más tiempo.\\
 
@@ -254,9 +258,7 @@ Esta técnica es opcional aunque es la recomendada. Las aplicaciones que lo sopo
 \item La comprobación de los Candidatos ICE se realiza en el momento de recibir uno.
 \end{enumerate}
 
-\begin{normalsize}
-\noindent \textbf{Formato de un Candidato ICE}\\
-\end{normalsize}
+\subsubsection{Formato de un Candidato ICE}
 
 \begin{lstlisting}[caption=Ejemplo paquete SDP]
 candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
@@ -270,14 +272,8 @@ candidate:1 1 UDP 1694498815 192.0.2.33 10000 typ host
 \textbf{Tipo (typ):} Tipo del componente.\\
 \textbf{Dirección relacionada (host):} Información opcional que contiene dirección IP y puerto privado.\\
 
-\subsubsection{Negociación de Vídeo}
 
-La negociación de vídeo es un proceso a través del que cada par puede indicar al otro qué resoluciones y \textit{frames rate} de vídeo es capaz de recibir. Esto lo hace a través de un atributo \textit{'a=imageattr'} en el SDP. Cada par puede tener límites como la capacidad de proceso que el decoder tiene, o simplemente restricciones de la aplicación.\\
-
-
-\subsection{WebRTC API's}
-
-\subsubsection{getUserMedia} 
+\section{WebRTC: API getUserMedia} 
 
 getUserMedia es la API encargada de suministrarnos el flujo de audio y/o vídeo. Pide permiso al usuario para acceder y utilizar los dispositivos hardware como la cámara y el micrófono. Por el momento sólo está disponible para captar el hardware de audio y vídeo anteriormente mencionado, pero se pretende mejorar y ampliar la API para que en un futuro se pueda hacer \emph{streaming} de casi cualquier fuente de datos, como un disco duro o sensores conectados al ordenador.\\
 
@@ -331,7 +327,7 @@ function handleUserMediaError(error){
 
 \end{lstlisting}
 
-\subsubsection{RTCPeerConnection}
+\section{WebRTC: API RTCPeerConnection}
 
 Esta API es la encargada de crear la conexión \emph{Peer-2-Peer} entre el navegador local y el remoto. Trabaja de manera diferente si es el que hace la llamada (\textit{caller}) y el que la recibe (\textit{called}) debido a la señalización oferta/respuesta que ya hemos visto. Para ello hace uso de sus funciones para completar el proceso de señalización descrito anteriormente.\\
 
@@ -393,7 +389,7 @@ SRTP usa un protocolo que lo complementa. Este es SRTCP, el cual es el protocolo
 Ambos protocolos corren directamente sobre UDP y trabajan conjuntamente para adaptar y optimizar la conexión.\\
 
 
-\subsubsection{RTCDataChannel}
+\section{WebRTC: API RTCDataChannel}
 
 Llegamos a la tercera API de WebRTC. RTCDataChannel nos da la posibilidad de transferir todo tipo de datos u objetos a través de la conexión entre pares establecida con RTCPeerConnection.\\
 
