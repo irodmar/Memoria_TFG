@@ -6,11 +6,11 @@ El proyecto que explica esta memoria se encuadra dentro del manejo, control, rec
 
 \section{Sistemas de control de drones}
 
-Los drones pertenecen a la rama de robótica aérea, pero a su vez también son vehículos aéreos es un vehículos aéreo no trupilados (\emph{UAV, Unmanned  Aerial Vehicle}). Es un vehículo no tripulado, pero no autónomo, por lo que necesitan ser teleoperados desde tierra. Los sistemas actuales para ello se pueden dividir en dos grupos, los controlados mediante radiofrecuencia y los que usan sistemas alternativos.\\
+Los drones pertenecen a la rama de robótica aérea, pero a su vez también son vehículos aéreos es un vehículos aéreo no tripulados (\emph{UAV, Unmanned  Aerial Vehicle}). Es un vehículo no tripulado, pero no autónomo, por lo que necesitan ser teleoperados desde tierra. Los sistemas actuales para ello se pueden dividir en dos grupos, los controlados mediante radiofrecuencia y los que usan sistemas alternativos.\\
 
 \subsection{Radiocontrol}
 
-Es la técnica que permite el gobierno de un objeto a distancia de manera inalámbrica mediante una emisora de control remoto. Por otra parte, a bordo del vehículo, en nuestro caso un drone, debe ir una receptora de radio control. \\
+Es la técnica que permite el gobierno de un objeto a distancia de manera cámbrica mediante una emisora de control remoto. Por otra parte, a bordo del vehículo, en nuestro caso un drone, debe ir una receptora de radio control. \\
 
 \begin{figure}[htb]
 \centering
@@ -28,25 +28,27 @@ Estos sistemas tienen varias limitaciones. Una es el número de canales máximo 
 
 En la actualidad a parte del radiocontrol tenemos el control a través de WiFi. Este sistema consiste en la creación de una red WiFi por parte del drone a la cual se conecta el dispositivo con el que se maneja. Este dispositivo puede ser un mando diseñado y comercializado por la propia marca o un dispositivo móvil, el cuál usa una aplicación que es la que gestiona la conexión y transferencia de datos.\\
 
-La ventaja de estos sistemas es e ahorro de bateria, ya que los transmisores y antenas WiFi necesitan de menos potencia para cubrir las mismas distancias que los sistemas tradicionales de radiocontrol. Además el anocho de banda que nos proporciona es bastante elevado y podremos rtansferir tanto datos como las imágenes de las camaras HD a bordo del drone.\\
+La ventaja de estos sistemas es e ahorro de batería, ya que los transmisores y antenas WiFi necesitan de menos potencia para cubrir las mismas distancias que los sistemas tradicionales de radiocontrol. Además el ancho de banda que nos proporciona es bastante elevado y podremos transferir tanto datos como las imágenes de las cámaras HD a bordo del drone.\\
 
 Empresas como DJI usa sistemas mixtos que consisten en teleoperar el drone vía radiocontrol, pero la gestión de la cámara, con visualización incluida se realiza mediante una conexión WiFi como la explicada anteriormente.\\
  
-La empresa francesa Parrot, la cual tiene una flota de diversos modelos de drones, utiliza un sistema de red WiFi, a la cuál conectas un dispositivo móvil ya sea Android o iOS, y mediante una aplicación desarrollada por ellos se puede teleoperar el drone, así como tener otras funcionalidades como la grabación de video, captura de imágenes y gestión de parámetros de vuelo como altura o velocidad máxima. En capítulos posteriores profundizaremos en este sistema implementado, ya que es el que usaremos para desarrollar el nuestro.\\
+La empresa francesa Parrot, la cual tiene una flota de diversos modelos de drones, utiliza un sistema de red WiFi, a la cuál conectas un dispositivo móvil ya sea Android o iOS, y mediante una aplicación desarrollada por ellos se puede teleoperar el drone, así como tener otras funcionalidades como la grabación de vídeo, captura de imágenes y gestión de parámetros de vuelo como altura o velocidad máxima. En capítulos posteriores profundizaremos en este sistema implementado, ya que es el que usaremos para desarrollar el nuestro.\\
  
-\section{Tecnologías de comunicación a distancia en tiempo real}
+\section{Tecnologías de Comunicación a Distancia en Tiempo Real}
 
-Dentro de las tecnoligías que nos brindan comunicación en timpo real vamos a centrarnos en las que nos ofrecen conectividad multimedia.\\
+En la actualidad  existen numerosas tecnologías de comunicación en tiempo real, pero nos centraremos en las que nos ofrecen conectividad multimedia.\\
 
-\subsection{RTP, Protocolo de transporte en tiempo real}
+\subsection{RTP}
 
-\emph{RTP} son las siglas de \emph{Real-time Transport Protocol}, el cuál es un protocolo de nivel de sesión utilizado para la transmisión de información en tiempo real, como por ejemplo audio, vídeo y datos. Está desarrollado por el grupo de trabajo de transporte de auido y video del IETF (\textbf{Internet Engineering Task Force}). Este protocilo es la base de la industria de Voz sobre IP (\emph{VoIP}).\\
+\emph{RTP} son las siglas de \emph{Real-time Transport Protocol} o Protocolo de Transporte en Tiempo Real, el cuál es un protocolo de nivel de sesión utilizado para la transmisión de información en tiempo real, como por ejemplo audio, vídeo y datos. Está desarrollado por el grupo de trabajo de transporte de audio y vídeo del IETF (\textbf{Internet Engineering Task Force}). Este protocolo es la base de la industria de Voz sobre IP (\emph{VoIP}).\\
 
-RTP se encapsula sobre UDP y usa un puerto de usuario para cada medio que transfiere, admite direcciones de destino tanto \emph{unicast} como \emph{multicast}. Se encarga de enciar cualquier tipo de trama generada por cualquier algoritmo de codificación como H261, MPEG-1, MPEG-2... pero no añade ningún tipo de fiabilidad ni de calidad del servicio (\emph{QoS}). Lo único que incorpora son marcas de tiempo para evitar el tembleque o \emph{jitter} y la sincronización entre fujos en el destino y numeros de secuencia para detectar pérdidas en un flujo.\\
+RTP se encapsula sobre UDP y usa un puerto de usuario para cada medio que transfiere y admite direcciones de destino tanto \emph{unicast} como \emph{multicast}. Se encarga de enviar cualquier tipo de trama generada por cualquier algoritmo de codificación como H261, MPEG-1, MPEG-2... pero no añade ningún tipo de fiabilidad ni de calidad del servicio (\emph{QoS}). Lo único que incorpora son marcas de tiempo para evitar el tembleque o \emph{jitter} y la sincronización entre flujos en el destino y números de secuencia para detectar pérdidas en un flujo.\\
 
 RTP trabaja junto con otros dos protocolos que lo complementan. El primero es RTCP (\emph{Real time Control Protocol}), protocolo que proporciona información de control sobre la calidad de la transmisión. Transmite paquetes periódicos asociados a cada flujo RTP que incluye los detalles sobre los participantes, si hubiese más de uno, y las estadísticas de pérdidas que permiten el control de flujo y congestión. Según estas estadistas se puede hacer codificación adaptativa para adaptarse al medio. También trabaja sobre UDP y usa un numero de puerto superior al que usa el flujo de RTP.\\
 
-El segundo es RTSP (\emph{Real Time Streaming Protocol}), protocolo que permite realizar un control remoto de sesión de transmisión multimedia. Es un protocolo independiente del protocolo de transnporte, basado en texto que permite recuperar un determinado medio de un sevidor o grabar una multiconferencia.\\
+El segundo es RTSP (\emph{Real Time Streaming Protocol}), protocolo que permite realizar un control remoto de sesión de transmisión multimedia. Es un protocolo independiente del protocolo de transporte, basado en texto que permite recuperar un determinado medio de un servidor o grabar una multiconferencia.\\
+
+La norma define también el protoclo SRTP (\emph{Secure Real-time Transport Protocol}), el cuál es una extensión del perfil de RTP para conferencias de audio y vídeo que puede usarse para proporcionar confidencialidad, autenticación de mensajes y proteción de reenvío para flujos de audío y vídeo.\\
 
 
 \begin{figure}[htb]
@@ -55,6 +57,44 @@ El segundo es RTSP (\emph{Real Time Streaming Protocol}), protocolo que permite 
 \caption{Ejemplo de conexión RTC, RTCP y RTSP}
 \label{fig:rtc}
 \end{figure}
+
+
+\subsection{SIP}
+
+SIP o Protocolo de Inicio de Sesiones (\emph{Session Initiation Protocol}) es un protocolo desarrollado por el grupo de trabajo MMUSIC del IETF con la intención de ser el estándar para la iniciación, modificación y finalizacion de sesiones interactivas de usuario donde intervienen elementos multimedia como vídeo, voz, mensajería instantánea...
+
+Técnicamente no es un protocolo que transmite flujos multimedia, si no que es un protocolo de señalización cuya función es preparar el establecimiento y la terminación de sesiones multimedia entre máquinas remotas. Una de sus mas importante funciones es el intercambio de las descripciones de sesión (\emph{SDP}) de los usuarios. El concepto de sesión en este protocolo es muy amplio: una llamada entre dos, una videoconferencia, un juego interactivo entre varios usuarios...\\
+
+Es un protocolo muy ligero. Tiene solo 6 métodos basados en texto, de manera similar a HTTP o SMTP, pero es completamente independiente del protocolo de transporte utilizado (TCP, UDP, ATM, etc). \\
+
+Es el protocolo señalizador para el protocolo RTP explicado anteriormente. Entre otras, Ekiga, WengoPhone, MS Windows Messenger, Apple iChat AV ó Asterisk son algunas aplicaciones que utilizan SIP.\\
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{sip}
+\caption{Ejemplo de conexión SIP}
+\label{fig:sip}
+\end{figure}
+
+En la figura \ref{fig:sip} podemos ver un ejemplo de una conexión multimedia con RTP que utiliza el protocolo SIP para establecer y finalizar la sesión entre los dos usuarios.\\
+
+\subsection{ORTC}
+
+\emph{Object RTC} es un proyecto de codigo abierto que permite la comunicación en tiempo real (\emph{RTC, Real-Time Communications}) de dispositivos móviles con servidores u otros navegadores con el simple uso de unas API's JavaScript nativas en el navegador.\\ 
+
+El objetivo de Object RTC es permitir crear comunicaciones en tiempo real con una alta calidad en dispositivos moviles y servidores con el simple uso de JavaScript y HTML5. Es también una obligación  para ORTC ser compatible con WebRTC.\\
+
+ORTC es un proyecto respaldado por empresas de la talla de Hookflash, Microsoft o Google.
+
+
+
+
+
+
+
+
+
 
 
 
