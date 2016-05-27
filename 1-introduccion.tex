@@ -4,9 +4,131 @@ El proyecto que explica esta memoria se encuadra dentro del manejo, control, rec
 
 \section{Robótica}
 
+Robótica es la rama de la ingeniería mecánica, ingeniería eléctrica, ingeniería electrónica y ciencia de la computación que se ocupa del diseño, construcción, operación, disposición estructural, manufactura y aplicación de los robots. Estos robots están diseñados para realizar tareas o trabajos que los humanos no podemos, por lo que requieren de cierta inteligencia. Las ciencias y tecnologías de las que depende son: el álgebra, los autómatas programables, las máquinas de estados, la mecánica o la informática.\\
+
+Es una rama que no solo ha conseguido mediante el diseño y evolución grandes avances no solo en tareas que realizaban con anterioridad personas, sino ademas en otras que suponen una gran dificultad para ser realizadas por estas ya sea por su complejidad, como ensamblar elementos milimétricos en placas bases, o por realizarse en entornos peligrosos. Por otro lado también se han desarrollado robots domésticos para hacer nuestro día a día mas sencillo.\\
+
+\subsubsection{Morfología}
+
+Entre los componentes \emph{hardware} que componen un robot se encuentran las fuentes de alimentación, para dotar de autonomía a los robots; sensores y actuadores, que se asemejan a los órganos sensoriales humanos y que sirven para obtener información del entorno que les rodea como temperatura u objetos próximos e interactuar con ellos; memoria, microprocesadores y dispositivos de comunicación, que es la electrónica que se comunica con el dispositivo remoto y permite gobernar los movimientos del robot.\\
+
+Por otro lado tenemos el software, que es quien da la inteligencia al robot para llevar a cabo las funciones para las que fue diseñado.
+
+\subsubsection{Historia}
+
+El término \emph{robot} fue publicado por primera vez por el checo Karel Capek en \emph{Rossum's Universal Robots} (1921), mientras que la palabra \emph{robótica} fue usada por primera vez en la obra \emph{¡Embustero!} (\emph{Liar!}), de Isaac Asimov, en 1941.\\
+
+Los precursores de esta disciplina son los autómatas. Son máquinas con apariencia de seres animados que realizan movimientos propios de estos. Su origen se remonta a la prehistoria, con máquinas como la estatua de Memón en Etiopía, que emitía sonidos al recibir luz. Leonardo da Vinci (1452-1519) diseñó un león mecánico y consiguió que anduviese por una habitación. \\
+
+Es famoso el autómata de Henri Maillardet, creado alrededor del 1800, que realizaba varios dibujos y escribía poemas, pero siempre los mismos. Estos son solo algunos de los muchos ejemplos de autómatas en la historia.\\
+
+Hasta la segunda mitad del siglo XX no aparecieron los primeros robots reales, fuera de la ciencia ficción. Los primeros modelos surgen en los años 50 y funcionaban en entornos muy controlados. Unimate (figura \ref{fig:unimate}) fue el primer robot comercial y se usó en la fabricación de automóviles.  En los 60 fue desarrollada \emph{la bestia} (figura \ref{fig:the_beast}), un pequeño robot con capacidad para explorar paredes en busca de enchufes para recargarse.\\
+
+Otros ejemplos posteriores son \emph{Shakey} y su sucesor \emph{Flakey} (figura \ref{fig:flakey}), cuyo propósito era desplazarse y evitar obstáculos.\\
+
+Ya en los 90 se desarrollaron las técnicas de creación de mapas y de navegación en entornos no estructurados. \emph{Xavier}\cite{Carnegie} fue diseñado con este propósito.\\
+
+\begin{figure}[h]
+
+  \centering
+  \begin{subfigure}[h]{50mm}
+    \includegraphics[height=45mm]{unimate}
+    \caption{Brazo robótico Unimate.}
+    \label{fig:unimate}
+  \end{subfigure}
+  \begin{subfigure}[h]{0.35\textwidth}
+    \includegraphics[height=45mm]{the_beast}
+    \caption{``La bestia''.}
+    \label{fig:the_beast}
+  \end{subfigure}
+  \begin{subfigure}[h]{40mm}
+    \includegraphics[height=40mm]{flakey}
+    \caption{Flakey.}
+    \label{fig:flakey}
+  \end{subfigure}
+  \caption{Algunos de los primeros robots.}\label{fig:robot_history_1}
+
+\end{figure}
+
+A finales del siglo XX aparecen los primeros humanoides, robots con apariencia humana. Algunas funciones de los humanoides son realizar tareas de asistencia a enfermos o personas mayores, investigación para mejorar extremidades ortopédicas, entretenimiento, algunos trabajos como recepcionista o en el sector industrial, así como probar vehículos o herramientas diseñados para la forma humana. \emph{ASIMO} es uno de estos humanoides, y es capaz de andar, correr, reconocer objetos en movimiento, gestos y posturas, y apartarse al encontrarse con gente, entre otros.\\
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=80mm]{asimo}
+  \caption{Humanoide Asimo.}
+\end{figure}
+
+
+\section{Robótica aérea}
+
+Esta rama de la robótica lleva experimentando desde hace varios años un auge espectacular. A este tipo de robots se les conoce también como Vehículo Aéreo No Tripulado ó UAV (\emph{Unmanned Aerial Vehicle}), y de una manera mas coloquial también como \emph{drones}. Se trata de aeronaves con capacidad de volar sin la presencia de un piloto a bordo que lo controle. Algunos de estos drones tienen la capacidad de volar de manera autónoma, aunque lo más comun es que haya un piloto u operador teleoperandolo desde tierra.\\
+
+\subsubsection{Historia}
+
+Sus orígenes se remontan a la Primera Guerra Mundial, cuando aparecieron los primeros blancos aéreos (1916). También aparecen entonces los precursores de los misiles (Aeroplano Automático de Hewitt-Sperry). Después de la guerra, estos objetivos pasan a volar por control remoto (\emph{Fairey Queen}, 1931). El \emph{Queen Bee}, en 1935, fue el primero de estos objetivos con capacidad de reutilización. En esta década el veterano británico de la Primera Guerra Mundial Reginald Denny trabajó en EEUU en la creación de varios de estos aeroplanos, desde el \emph{RP-1} hasta el \emph{RP-4}. También se investigó el uso de \emph{drones} de ataque. Fueron usados, si bien de forma limitada, durante la Segunda Guerra Mundial (TDN-1, Project Fox...).\\
+
+Los avances continúan durante la Guerra Fría. El \emph{RP-71}, posteriormente conocido como \emph{MQM-57 Falconer}, fue el primer BTT (\emph{Basic Training Targets}) que evolucionó para ser utilizado con funciones de reconocimiento de terreno, y tuvo su primer vuelo en 1955. Drones de reconocimiento fueron usados también en la guerra de Vietnam, en China y Corea.\\
+
+La modificación del modelo \emph{B-17 Flying Fortress} permitió utilizar varios como drones para reunir datos radiactivos en pruebas nucleares siendo enviados cerca de la nube provocada por la explosión. Esto ocurrió en las pruebas realizadas en el Atolón Bikini.\\
+
+En la década de los 70 fueron desarrollados en Israel varios modelos importantes. El \emph{Firebee 1241} fue diseñado a partir del \emph{Firebee} estadounidense, y se usó con funciones de reconocimiento y como señuelo.\\
+
+El \emph{Scout} fue un modelo ligero y pequeño difícil de detectar y derribar que transmitía datos procedentes de su radar, que realizaba barridos de 360º. Ya en los 80, Israel y EEUU desarrollaron el \emph{Pioneer}. Este UAV podía volar por trayectorias preprogramadas, con piloto automático o controlado desde tierra. Era necesario monitorizar la posición del Pioneer con un enlace radio. Contaba con una autonomía de 5'5 horas. El ejército estadounidense lo utilizó en la Guerra del Golfo.\\
+
+
+\subsubsection{Clasificación y usos}
+
+Podemos encontrar varios tipos de drones atendiendo a su forma y componentes materiales. Los UAV de ala fija son similares a pequeños aviones y despegan y aterrizan del mismo modo. Estos son capaces de alcanzar altas velocidades. Un ejemplo es el UAV MAVinci. Otro tipo es el de fuselaje sustentador, el cual carece de alas y se sirve del propio cuerpo para producir la fuerza de sustentación que le permite volar. Los de ala rotatoria se asemejan a los helicópteros. Suelen tener cuatro o más motores (cuadricópteros, octocópteros, etc). Tienen la ventaja de poder permanecer cernidos en un punto fijo. Ejemplos de cuadricópteros son el Phantom 4 de DJI y el ArDrone 2.0 de Parrot.
+
+En la actualidad los UAV tienen utilidad en múltiples campos. Algunos de ellos son los siguientes:
+
+\begin{itemize}
+ \item \textbf{Militares.} Blancos móviles aéreos, reconocimiento de terreno y combate, entre otras tareas. 
+ \item \textbf{Vigilancia.} Seguridad en hogares, vigilancia de autopistas, costas, etc. 
+ \item \textbf{Inspección y reparaciones.} Fotografiar torres eléctricas, oleoductos, presas, gaseoductos, molinos eólicos, puentes, plataformas petrolíferas, etc, con el objetivo de vigilar o buscar daños que deban repararse.
+ \item \textbf{Filmación.} Grabación de video para retransmisiones deportivas, anuncios o escenas de cine difíciles de grabar con cámaras convencionales.
+ \item \textbf{Sondas de investigación.} Es posible enviar UAV para obtener datos a partir de sus sensores o tomar muestras de partículas, microorganismos, etc. Por ejemplo, se han realizado estudios de huracanes por medio de medidas de presión y temperatura tomadas por UAV enviados al huracán.
+ \item \textbf{Rescates.} Es más eficiente para rescatar personas que hayan sufrido accidentes en el mar, montañas, u otras zonas de difícil acceso, o bien víctimas de desastres naturales, contar con la ayuda de UAV que faciliten la localización de supervivientes.
+ \item \textbf{Detección de incendios.} Otra utilidad es la detección de focos de fuego, por ejemplo en incendios forestales. En general son útiles para la conservación de reservas naturales o zonas protegidas.
+\end{itemize}
+
+
+\subsubsection{Cuadricópteros}\label{sec:quadrotors}
+
+Dentro de todos los tipos diferentes de vehículos UAV vamos a centrarnos en los cuadricópteros, y aunque no es necesario es conveniente que hablemos sobre la física que hace posible el vuelo de estos robots.\\
+
+Un cuadricóptero utiliza los principios básicos de un helicóptero, utilizando cuatro rotores en vez uno. Estos rotores se acoplan a un esqueleto, el cual puede tener forma de 'x' o de '+'. Con la primera configuración tendríamos 2 motores delanteros y dos traseros (derecho e izquierdo), mientras que con la segunda configuración habría uno delantero, uno trasero y uno en cada lado. \\
+
+Un problema que tienen que afrontar los helicópteros de un solo rotor, es que este produce una fuerza de torsión en el sentido de giro, por lo que es necesario otro rotor más pequeño perpendicular al principal para producir otra fuerza de sustentación que se oponga a la torsión y que el helicóptero no esté continuamente dando vueltas en torno a su eje vertical. En el caso de los cuadricópteros, al disponer de varios rotores, la solución es que el giro de las hélices de una misma extremidad sea opuesto al giro de las de la otra extremidad, de forma que las torsiones se anulen.\\
+
+Dirigir y controlar el movimiento del vehículo se consigue variando la velocidad relativa de cada rotor para cambiar el empuje y el par motor de cada uno de ellos. Las hélices de los rotores, al girar, producen una fuerza de empuje hacia arriba llamada sustentación que es la que hace que se eleve el aparato. Esta fuerza es perpendicular a la velocidad del fluido relativa a la hélice y está contenida en el plano definido por la misma velocidad y la normal a la superficie de la hélice. Para que el drone despegue, la suma de fuerzas provocadas por cada rotor debe superar su peso. Una vez en el aire, si la suma de fuerzas es igual al peso, el drone permanecerá en una altitud fija o cernido (\emph{hovering}). Para aterrizar, o desplazarse hacia abajo, es necesario hacer que la fuerza resultante sea algo menor que la del peso.\\
+
+
+\begin{figure}[h]
+\centering
+  \begin{subfigure}[]{60mm}
+    \includegraphics[width=60mm]{quadrotor-rotating}
+    \caption{Giro a la derecha.} 
+  \end{subfigure}
+  \hspace{5pt}
+  \begin{subfigure}[]{60mm}
+    \includegraphics[width=60mm]{quadrotor-forward}
+    \caption{Movimiento hacia delante.}
+  \end{subfigure}
+  \caption{Distintas configuraciones de los motores del cuadricóptero para desplazarse.}\label{fig:quadrotor_movements}
+\end{figure}
+
+
+
+Para provocar un giro en sentido horario será preciso aumentar la potencia en los rotores con el sentido contrario, al mismo tiempo que se reduce proporcionalmente la potencia de los otros dos para que la fuerza de sustentación siga constante, ya que en caso contrario el robot se desplazaría en su eje \emph{z}.\\
+
+
+El movimiento hacia delante-atrás o hacia la derecha-izquierda se consigue disminuyendo la potencia de los rotores que estén en el lado hacia el cual se deba desplazar y aumentando los del lado contrario en igual proporción si el drone debe permanecer a una altura fija. Es decir, para movernos hacia la derecha habrá que disminuir la potencia de los rotores derechos y aumentar la de los izquierdos, de forma que el drone se incline hacia la derecha y la fuerza de sustentación tenga una componente horizontal no nula.\\
+
+
 \section{Sistemas de control de drones}
 
-Los drones pertenecen a la rama de robótica aérea, pero a su vez también son vehículos aéreos es un vehículos aéreo no tripulados (\emph{UAV, Unmanned  Aerial Vehicle}). Es un vehículo no tripulado, pero no autónomo, por lo que necesitan ser teleoperados desde tierra. Los sistemas actuales para ello se pueden dividir en dos grupos, los controlados mediante radiofrecuencia y los que usan sistemas alternativos.\\
+Los drones pertenecen a la rama de robótica aérea, pero a su vez también son vehículos aéreos no tripulados (\emph{UAV, Unmanned  Aerial Vehicle}). Es un vehículo no tripulado, pero no autónomo, por lo que necesitan ser teleoperados desde tierra. Los sistemas actuales para ello se pueden dividir en dos grupos, los controlados mediante radiofrecuencia y los que usan sistemas alternativos.\\
 
 \subsection{Radiocontrol}
 
@@ -36,19 +158,19 @@ La empresa francesa Parrot, la cual tiene una flota de diversos modelos de drone
  
 \section{Tecnologías de Comunicación a Distancia en Tiempo Real}
 
-En la actualidad  existen numerosas tecnologías de comunicación en tiempo real, pero nos centraremos en las que nos ofrecen conectividad multimedia.\\
+En la actualidad  existen numerosas tecnologías de comunicación en tiempo real, pero nos centraremos en las que nos ofrecen conectividad multimedia. Primero veremos protocolos que se pueden implementar en aplicaciones de escritorio, y posteriormente veremos los protocolos web mas actuales.\\
 
 \subsection{RTP}
 
-\emph{RTP} son las siglas de \emph{Real-time Transport Protocol} o Protocolo de Transporte en Tiempo Real, el cuál es un protocolo de nivel de sesión utilizado para la transmisión de información en tiempo real, como por ejemplo audio, vídeo y datos. Está desarrollado por el grupo de trabajo de transporte de audio y vídeo del IETF (\textbf{Internet Engineering Task Force}). Este protocolo es la base de la industria de Voz sobre IP (\emph{VoIP}).\\
+\emph{RTP} son las siglas de \emph{Real-time Transport Protocol} o Protocolo de Transporte en Tiempo Real, el cuál es un protocolo de escritorio y de nivel de sesión utilizado para la transmisión de información en tiempo real, como por ejemplo audio, vídeo y datos. Está desarrollado por el grupo de trabajo de transporte de audio y vídeo del IETF (\emph{Internet Engineering Task Force}). Este protocolo es la base de la industria de Voz sobre IP (\emph{VoIP}).\\
 
-RTP se encapsula sobre UDP y usa un puerto de usuario para cada medio que transfiere y admite direcciones de destino tanto \emph{unicast} como \emph{multicast}. Se encarga de enviar cualquier tipo de trama generada por cualquier algoritmo de codificación como H261, MPEG-1, MPEG-2... pero no añade ningún tipo de fiabilidad ni de calidad del servicio (\emph{QoS}). Lo único que incorpora son marcas de tiempo para evitar el tembleque o \emph{jitter} y la sincronización entre flujos en el destino y números de secuencia para detectar pérdidas en un flujo.\\
+Se encapsula sobre UDP y usa un puerto de usuario para cada medio que transfiere y admite direcciones de destino tanto \emph{unicast} como \emph{multicast}. Se encarga de enviar cualquier tipo de trama generada por cualquier algoritmo de codificación como H261, MPEG-1, MPEG-2... pero no añade ningún tipo de fiabilidad ni de calidad del servicio (\emph{QoS}). Lo único que incorpora son marcas de tiempo para evitar el tembleque o \emph{jitter} y la sincronización entre flujos en el destino y números de secuencia para detectar pérdidas en un flujo.\\
 
 RTP trabaja junto con otros dos protocolos que lo complementan. El primero es RTCP (\emph{Real time Control Protocol}), protocolo que proporciona información de control sobre la calidad de la transmisión. Transmite paquetes periódicos asociados a cada flujo RTP que incluye los detalles sobre los participantes, si hubiese más de uno, y las estadísticas de pérdidas que permiten el control de flujo y congestión. Según estas estadistas se puede hacer codificación adaptativa para adaptarse al medio. También trabaja sobre UDP y usa un numero de puerto superior al que usa el flujo de RTP.\\
 
 El segundo es RTSP (\emph{Real Time Streaming Protocol}), protocolo que permite realizar un control remoto de sesión de transmisión multimedia. Es un protocolo independiente del protocolo de transporte, basado en texto que permite recuperar un determinado medio de un servidor o grabar una multiconferencia.\\
 
-La norma define también el protoclo SRTP (\emph{Secure Real-time Transport Protocol}), el cuál es una extensión del perfil de RTP para conferencias de audio y vídeo que puede usarse para proporcionar confidencialidad, autenticación de mensajes y proteción de reenvío para flujos de audío y vídeo.\\
+La norma define también el protoclo SRTP (\emph{Secure Real-time Transport Protocol}), el cuál es una extensión del perfil de RTP para conferencias de audio y vídeo que puede usarse para proporcionar confidencialidad, autenticación de mensajes y protección de reenvío para flujos de audio y vídeo.\\
 
 
 \begin{figure}[htb]
@@ -61,7 +183,7 @@ La norma define también el protoclo SRTP (\emph{Secure Real-time Transport Prot
 
 \subsection{SIP}
 
-SIP o Protocolo de Inicio de Sesiones (\emph{Session Initiation Protocol}) es un protocolo desarrollado por el grupo de trabajo MMUSIC del IETF con la intención de ser el estándar para la iniciación, modificación y finalizacion de sesiones interactivas de usuario donde intervienen elementos multimedia como vídeo, voz, mensajería instantánea...
+SIP o Protocolo de Inicio de Sesiones (\emph{Session Initiation Protocol}) es un protocolo desarrollado por el grupo de trabajo MMUSIC del IETF con la intención de ser el estándar para la iniciación, modificación y finalización de sesiones interactivas de usuario donde intervienen elementos multimedia como vídeo, voz, mensajería instantánea...
 
 Técnicamente no es un protocolo que transmite flujos multimedia, si no que es un protocolo de señalización cuya función es preparar el establecimiento y la terminación de sesiones multimedia entre máquinas remotas. Una de sus mas importante funciones es el intercambio de las descripciones de sesión (\emph{SDP}) de los usuarios. El concepto de sesión en este protocolo es muy amplio: una llamada entre dos, una videoconferencia, un juego interactivo entre varios usuarios...\\
 
@@ -81,30 +203,81 @@ En la figura \ref{fig:sip} podemos ver un ejemplo de una conexión multimedia co
 
 \subsection{ORTC}
 
-\emph{Object RTC} es un proyecto de codigo abierto que permite la comunicación en tiempo real (\emph{RTC, Real-Time Communications}) de dispositivos móviles con servidores u otros navegadores con el simple uso de unas API's JavaScript nativas en el navegador.\\ 
+\emph{Object RTC} es un proyecto de código abierto que permite la comunicación en tiempo real (\emph{RTC, Real-Time Communications}) de dispositivos móviles con servidores u otros navegadores con el simple uso de unas API's JavaScript nativas en el navegador.\\ 
 
-El objetivo de Object RTC es permitir crear comunicaciones en tiempo real con una alta calidad en dispositivos moviles y servidores con el simple uso de JavaScript y HTML5. Es también una obligación  para ORTC ser compatible con WebRTC.\\
+El objetivo de Object RTC es permitir crear comunicaciones en tiempo real con una alta calidad en dispositivos móviles y servidores con el simple uso de JavaScript y HTML5. Es también una obligación para ORTC ser compatible con WebRTC.\\
 
-ORTC es un proyecto respaldado por empresas de la talla de Hookflash, Microsoft o Google.
+Aunque ORTC es un proyecto respaldado por empresas de la talla de Hookflash, Microsoft o Google, por el momento no es una especificación del consorcio W3C (\emph{World Wide Web Consortium}).\\
 
+ORTC comparte muchas similitudes con WebRTC, como mayor diferencia tenemos que ORTC no utiliza SDP ni el protocolo de Oferta/Respuesta, en cambio utiliza los objetos 'enviador' (\emph{sender}), 'recibidor' (\emph{receiver}) y 'transporte' (\emph{transport}), los cuales tienen capacidades que describen que pueden hacer y sus parámetros que definen como están configurados. Además ORTC no está disponible nada más que en el navegador Edge de Microsoft.\\
 
-
-
-
-
-
-
-
-
-
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{ortc}
+\caption{API de ORTC}
+\label{fig:ortc}
+\end{figure}
 
 
+\subsection{WebRTC}
+
+En mayo de 2011 Google liberó un proyecto de código abierto basado en la comunicación entre navegadores en tiempo real. El proyecto ha sido continuado estandarizando los protocolos en el IETF y las API's de JavaScript en el W3C.\\
+
+En el consorcio W3C WebRTC es aún un borrador de un proyecto en marcha el cuál esta altamente implementado en los navegadores como Mozilla Firefox y Google Chrome. La API está basada en el trabajo previo realizado por \emph{Web Hypertext Application Technology Working Group} (WHATWG).\\
+
+Esta tecnología nos brinda la capacidad de crear numerosas aplicaciones de comunicaciones directamente en el navegador, sin necesidad de servidores internos, y está llamada a ser el futuro de las comunicaciones en tiempo real.\\
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{webrtc}
+\caption{WebRTC}
+\label{fig:webrtc}
+\end{figure}
 
 
 
+\section{Motivación y punto de partida}
+
+En estos últimos años el desarrollo de vehículos no tripulados ha tenido un avance muy significativo, sobre todo en aplicaciones de uso civil. Las tecnologías web son otro campo que ha experimentado un avance enorme en los últimos años, permitiendo crear aplicaciones mas complejas y elaboradas.\\
+
+La posibilidad de aunar estos dos campos son a para mi un gran aliciente y un gran reto a la vez. El fondo del proyecto consiste es desarrollar una aplicación web con tecnologías de última generación que permita teleoperar el drone.\\
+
+Como base para el proyecto tenemos los siguientes proyectos, desarrollados también por alumnos de la URJC.\\
+
+\subsection{Surveillance 4.0 (URJC)}
+
+Surveillance 4.0 desarrollado por Daniel Castellano como su Proyecto Fin de Carrera. Esta aplicación contaba con varios sensores de distinto tipo (humedad, temperatura, gas, etc) que se conectaban inalámbricamente con un nodo central situado en una Raspberry Pi. La conexión inalámbrica se hacía mediante transmisores Zigbee con un protocolo propio llamado WHAP. El nodo central recibía los datos de los sensores y los mostraba mediante un servidor web que corría en la misma máquina. La aplicación web se desarrolló en Python usando el entorno de desarrollo web Django. En Surveillance 4.0, los valores de los sensores se guardaban en una base de datos que la aplicación web consultaba cuando era necesario. Además, esta versión incluía un streaming de vídeo utilizando el software de código abierto M-JPEG Streamer. En la figura \ref{fig:surveillance4} se puede ver la aplicación.\\
+
+\begin{figure}[h]
+\centering
+  \begin{subfigure}[]{110mm}
+    \includegraphics[width=110mm]{surveillance4}
+  \end{subfigure}
+  \hspace{5pt}
+  \begin{subfigure}[]{110mm}
+    \includegraphics[width=110mm]{Esquema_s4}
+  \end{subfigure}
+  \caption{interfaz (a) y arquitectura (b).}\label{fig:surveillance4}
+\end{figure}
 
 
 
+\subsection{Surveillance 5.1 (URJC)}
+
+Surveillance 5.1 desarrollado por Edgar Barrero como su Trabajo Fin de Grado. Esta aplicación obtenía un flujo de imágenes de una cámara web, un flujo de imágenes de profundidad de un sensor Kinect, además de datos de un sensor de humedad y de interaccionar con un actuador. La aplicación web se desarrolló en Ruby sobre Rails. En Surveillance 5.1, el servidor web se conectaba a los componente de JdeRobot mediante sus interfaces ICE. La aplicación web refrescaba estos datos mediante peticiones AJAX.  En la figura \ref{fig:surveillance5} se puede ver la aplicación.\\
 
 
-\section{Motivación}
+\begin{figure}[h]
+\centering
+  \begin{subfigure}[]{110mm}
+    \includegraphics[width=110mm]{surveillance5}
+  \end{subfigure}
+  \hspace{5pt}
+  \begin{subfigure}[]{110mm}
+    \includegraphics[width=110mm]{esquema_s4}
+  \end{subfigure}
+  \caption{interfaz (a) y arquitectura (b).}\label{fig:surveillance5}
+\end{figure}
+
+
+
