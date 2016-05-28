@@ -238,11 +238,13 @@ Esta tecnología nos brinda la capacidad de crear numerosas aplicaciones de comu
 
 \section{Motivación y punto de partida}
 
-En estos últimos años el desarrollo de vehículos no tripulados ha tenido un avance muy significativo, sobre todo en aplicaciones de uso civil. Las tecnologías web son otro campo que ha experimentado un avance enorme en los últimos años, permitiendo crear aplicaciones mas complejas y elaboradas.\\
+En estos últimos años el desarrollo de vehículos no tripulados ha tenido un avance muy significativo, sobre todo en aplicaciones de uso civil. Uno de los campos en los que más ha despuntado es en el uso para la grabación de cualquier tipo de eventos, tanto a nivel profesional como a nivel \emph{amateur}.\\
 
-La posibilidad de aunar estos dos campos son a para mi un gran aliciente y un gran reto a la vez. El fondo del proyecto consiste es desarrollar una aplicación web con tecnologías de última generación que permita teleoperar el drone.\\
+Las tecnologías web son otro campo que ha experimentado un avance enorme en los últimos años, permitiendo crear aplicaciones mas complejas y elaboradas. Estas aplicaciones a la vez de ser mas potentes se pueden implementar directamente en un navegador, sin necesidad de instalación en el ordenador del cliente final.\\
 
-Como base para el proyecto tenemos los siguientes proyectos, desarrollados también por alumnos de la URJC.\\
+Como amante de las nuevas tecnologías web, y aficionado a la robotica en general y a los cuadricopteros en particular, la posibilidad de aunar estos dos campos son a para mi un gran aliciente y un gran reto a la vez. El fondo del proyecto consiste es desarrollar una aplicación web con tecnologías de última generación que permita teleoperar el drone.\\
+
+Como base para el proyecto y aliciente para desarrollar una aplicacion web tenemos los siguientes proyectos, desarrollados también por alumnos de la URJC.\\
 
 \subsection{Surveillance 4.0 (URJC)}
 
@@ -278,6 +280,39 @@ Surveillance 5.1 desarrollado por Edgar Barrero como su Trabajo Fin de Grado. Es
   \end{subfigure}
   \caption{interfaz (a) y arquitectura (b).}\label{fig:surveillance5}
 \end{figure}
+
+
+\subsection{Tecnologías web en plataforma robótica JdeRobot}
+
+Esta plataforma está desarrollada por Aitor Martinez como su Trabajo Fin de Grado. Esta plataforma está compuesta por seis clientes Web: CameraViewJS, RGBDViewerJS, KobukiViewerJS, UavViewerJS, IntrorobKobukiJS e IntrorobUavJS, los cuales son las versiones web de las herramientas homónimas desarrolladas por JdeRobot. Estas nuevas herramientas hablan directamente con los servidores desarrollados por JdeRobot para acceder a los sensores y robots, y como diferencia principal destacable no necesitan de servidores intermedios para funcionar, utilizando \emph{websockets} para establecer las conexiones necesarias.\\
+
+\noindent Las funcionalidades de estos clientes web son: 
+
+\begin{enumerate}
+
+\item \emph{CameraViewJS:} Cliente web similar a la herramienta \texttt{CameraView} para visualizar imágenes procedentes del servidor \texttt{Cameraserver}. 
+
+\item \emph{RGBDViewerJS:} Cliente web similar a la herramienta RGBDViewer para visualizar datos de color y profundidad procedentes del servidor \texttt{Openni1Server}.
+  
+\item \emph{KobukiViewerJS:} Teleoperador para manejar y ver los datos de los sensores de los robots Kobuki y Pioneer del laboratorio de robótica de la URJC. Versión web de \texttt{KobukiViewer}
+  
+  
+\item \emph{UavViewerJS:} Cliente web similar a la herramienta UavViewer para teleoperar drones tanto reales como simulados y ver los datos de sus sensores.
+  
+  
+\item \emph{IntrorobKobukiJS e IntrorobUavJS} Son dos herramientas que además de mostrar los datos sensoriales del robot y ofrecen su teleoperación, permiten insertar código que gobierna el comportamiento autónomo de robots Kobuki y drones. En la figura \ref{fig:introrobuavjs} podemos ver la herramienta IntrorobUavJS.
+
+\end{enumerate}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{introrobuavjs}
+\caption{Cliente web IntrorobUavJS}
+\label{fig:introrobuavjs}
+\end{figure}
+
+
+En el proyecto que aquí se presenta se desarrolla una aplicación web capaz de teleoperar un cuadricoptero usando los servidores desarrollados por JdeRobot para conectarnos al drone, sus sensores y actuadores, y añadiendo la tecnología web de última generación \emph{WebRTC} para establecer la conexión entre el ordenador que se comunicará con el drone y el ordenador remoto, desde el cuál se podrán ver los sensores y la cámara a bordo del drone, además como ya he mencionado, de teleoperarlo. Estas conexiones se realizarán sin el uso de servidor intermedio, usando tecnologías en tiempo real que se conectarán mediante \emph{WebSockets} de \emph{JavaScript}.\\
 
 
 
