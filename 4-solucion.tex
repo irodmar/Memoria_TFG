@@ -1,0 +1,33 @@
+\chapter{Solución}
+
+Una vez nos hemos situado en el contexto en el que se ubica este proyecto, y hemos expuesto los requisitos a cumplir y las herramientas necesarias para llegar a las metas planteadas, nos adentramos a explicar en este capitulo las soluciones utilizadas para llegar a buen puerto.\\
+
+\section{Estructura general}
+
+Como primer problema se presentó decidir cuales de los dos ordenadores que necesitamos para la conexión WebRTC seria el que realizaría la llamada y en que momento del flujo. Este no es un problema trivial, ya que la selección de uno u otro haría que el desarrollo de la aplicación fuese completamente distinto. Se optó por que el par que llevase la batuta de la conexión fuese el ordenador local, ya que este a su vez también tiene que establecer la conexión con el drone.\\
+
+Como ya se comento en la sección \ref{sec:senalizacion} el momento en el que se envía y se recibe cada paquete de información es critico en este sistema de señalizacion de de oferta/respuesta, por lo que el flujo de la comunicación se diseño y se ha desarrollado como se muestra en la figura \ref{fig:flujotrabajo}.
+
+***esquema general de quien hace la llamada***
+
+
+\section{Señalización}
+
+Necesitamos un servidor que sea capaz de intercambiar los datos de red necesarios y de paquetes SDP. Los requisitos básicos es que cumpla norma de oferta/respuesta que indica la arquitectura JSEP de la que ya hemos hablado.\\
+
+Se ha optado por un servidor escrito en el lenguaje de programación \emph{Node.js}\footnote{https://nodejs.org/}, por escribirse en JavaScript y por ser fácil de implementar, además de ser liviano. Para el intercambio de paquetes necesitaremos usar la libreria \emph{Socket.io}\footnote{http://socket.io}, la cuál nos facilita el desarrollo de aplicaciones que usan Websockets.\\
+
+
+
+\section{Uso WebRTC control drone}
+\subsection{Transmisión de la cámara a bordo}
+\subsection{Sensores de navegación}
+\subsection{Órdenes}
+\subsection{Localización espacial del drone}
+
+\section{Conexión con la API del drone}
+
+\section{Interfaz amigable y actual}
+\subsection{Visualización de las imágenes}
+\subsection{Joysticks}
+\subsection{Relojes de navegación}
