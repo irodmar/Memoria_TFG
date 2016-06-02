@@ -2,81 +2,20 @@
 
 El proyecto que explica esta memoria se encuadra dentro del manejo, control, recogida y procesado de datos de sensores y actuadores de un drone a distancia. El drone es un vehículo aéreo no tripulado al que podemos definir dentro de la robótica aérea. En las siguientes páginas se dará unas pinceladas sobre la robótica, su historia y uso actual. También hablaremos sobre los sistemas actuales de control y manejo de drones, y para finalizar daremos una visión global sobre las tecnologías existentes dentro de las Comunicaciones en Tiempo Real (RTC, Real Time Communications).\\
 
-\section{Robótica}
+\section{Robótica aérea}
 
 Robótica es la rama de la ingeniería mecánica, ingeniería eléctrica, ingeniería electrónica y ciencia de la computación que se ocupa del diseño, construcción, operación, disposición estructural, manufactura y aplicación de los robots. Estos robots están diseñados para realizar tareas o trabajos que los humanos no podemos, por lo que requieren de cierta inteligencia. Las ciencias y tecnologías de las que depende son: el álgebra, los autómatas programables, las máquinas de estados, la mecánica o la informática.\\
 
 Es una rama que no solo ha conseguido mediante el diseño y evolución grandes avances no solo en tareas que realizaban con anterioridad personas, sino ademas en otras que suponen una gran dificultad para ser realizadas por estas ya sea por su complejidad, como ensamblar elementos milimétricos en placas bases, o por realizarse en entornos peligrosos. Por otro lado también se han desarrollado robots domésticos para hacer nuestro día a día mas sencillo.\\
 
-\subsubsection{Morfología}
-
 Entre los componentes \emph{hardware} que componen un robot se encuentran las fuentes de alimentación, para dotar de autonomía a los robots; sensores y actuadores, que se asemejan a los órganos sensoriales humanos y que sirven para obtener información del entorno que les rodea como temperatura u objetos próximos e interactuar con ellos; memoria, microprocesadores y dispositivos de comunicación, que es la electrónica que se comunica con el dispositivo remoto y permite gobernar los movimientos del robot.\\
 
-Por otro lado tenemos el software, que es quien da la inteligencia al robot para llevar a cabo las funciones para las que fue diseñado.
-
-\subsubsection{Historia}
-
-El término \emph{robot} fue publicado por primera vez por el checo Karel Capek en \emph{Rossum's Universal Robots} (1921), mientras que la palabra \emph{robótica} fue usada por primera vez en la obra \emph{¡Embustero!} (\emph{Liar!}), de Isaac Asimov, en 1941.\\
-
-Los precursores de esta disciplina son los autómatas. Son máquinas con apariencia de seres animados que realizan movimientos propios de estos. Su origen se remonta a la prehistoria, con máquinas como la estatua de Memón en Etiopía, que emitía sonidos al recibir luz. Leonardo da Vinci (1452-1519) diseñó un león mecánico y consiguió que anduviese por una habitación. \\
-
-Es famoso el autómata de Henri Maillardet, creado alrededor del 1800, que realizaba varios dibujos y escribía poemas, pero siempre los mismos. Estos son solo algunos de los muchos ejemplos de autómatas en la historia.\\
-
-Hasta la segunda mitad del siglo XX no aparecieron los primeros robots reales, fuera de la ciencia ficción. Los primeros modelos surgen en los años 50 y funcionaban en entornos muy controlados. Unimate (figura \ref{fig:unimate}) fue el primer robot comercial y se usó en la fabricación de automóviles.  En los 60 fue desarrollada \emph{la bestia} (figura \ref{fig:the_beast}), un pequeño robot con capacidad para explorar paredes en busca de enchufes para recargarse.\\
-
-Otros ejemplos posteriores son \emph{Shakey} y su sucesor \emph{Flakey} (figura \ref{fig:flakey}), cuyo propósito era desplazarse y evitar obstáculos.\\
-
-Ya en los 90 se desarrollaron las técnicas de creación de mapas y de navegación en entornos no estructurados. \emph{Xavier}\cite{Carnegie} fue diseñado con este propósito.\\
-
-\begin{figure}[h]
-
-  \centering
-  \begin{subfigure}[h]{50mm}
-    \includegraphics[height=45mm]{unimate}
-    \caption{Brazo robótico Unimate.}
-    \label{fig:unimate}
-  \end{subfigure}
-  \begin{subfigure}[h]{0.35\textwidth}
-    \includegraphics[height=45mm]{the_beast}
-    \caption{``La bestia''.}
-    \label{fig:the_beast}
-  \end{subfigure}
-  \begin{subfigure}[h]{40mm}
-    \includegraphics[height=40mm]{flakey}
-    \caption{Flakey.}
-    \label{fig:flakey}
-  \end{subfigure}
-  \caption{Algunos de los primeros robots.}\label{fig:robot_history_1}
-
-\end{figure}
-
-A finales del siglo XX aparecen los primeros humanoides, robots con apariencia humana. Algunas funciones de los humanoides son realizar tareas de asistencia a enfermos o personas mayores, investigación para mejorar extremidades ortopédicas, entretenimiento, algunos trabajos como recepcionista o en el sector industrial, así como probar vehículos o herramientas diseñados para la forma humana. \emph{ASIMO} es uno de estos humanoides, y es capaz de andar, correr, reconocer objetos en movimiento, gestos y posturas, y apartarse al encontrarse con gente, entre otros.\\
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[height=80mm]{asimo}
-  \caption{Humanoide Asimo.}
-\end{figure}
+Por otro lado tenemos el software, que es quien da la inteligencia al robot para llevar a cabo las funciones para las que fue diseñado.\\
 
 
-\section{Robótica aérea}
+La rama de la robótica aérea lleva experimentando desde hace varios años un auge espectacular. A este tipo de robots se les conoce también como Vehículo Aéreo No Tripulado ó UAV (\emph{Unmanned Aerial Vehicle}), y de una manera mas coloquial también como \emph{drones}. Se trata de aeronaves con capacidad de volar sin la presencia de un piloto a bordo que lo controle. Algunos de estos drones tienen la capacidad de volar de manera autónoma, aunque lo más común es que haya un piloto u operador teleoperandolo desde tierra.\\
 
-Esta rama de la robótica lleva experimentando desde hace varios años un auge espectacular. A este tipo de robots se les conoce también como Vehículo Aéreo No Tripulado ó UAV (\emph{Unmanned Aerial Vehicle}), y de una manera mas coloquial también como \emph{drones}. Se trata de aeronaves con capacidad de volar sin la presencia de un piloto a bordo que lo controle. Algunos de estos drones tienen la capacidad de volar de manera autónoma, aunque lo más común es que haya un piloto u operador teleoperandolo desde tierra.\\
-
-\subsubsection{Historia}
-
-Sus orígenes se remontan a la Primera Guerra Mundial, cuando aparecieron los primeros blancos aéreos (1916). También aparecen entonces los precursores de los misiles (Aeroplano Automático de Hewitt-Sperry). Después de la guerra, estos objetivos pasan a volar por control remoto (\emph{Fairey Queen}, 1931). El \emph{Queen Bee}, en 1935, fue el primero de estos objetivos con capacidad de reutilización. En esta década el veterano británico de la Primera Guerra Mundial Reginald Denny trabajó en EEUU en la creación de varios de estos aeroplanos, desde el \emph{RP-1} hasta el \emph{RP-4}. También se investigó el uso de \emph{drones} de ataque. Fueron usados, si bien de forma limitada, durante la Segunda Guerra Mundial (TDN-1, Project Fox...).\\
-
-Los avances continúan durante la Guerra Fría. El \emph{RP-71}, posteriormente conocido como \emph{MQM-57 Falconer}, fue el primer BTT (\emph{Basic Training Targets}) que evolucionó para ser utilizado con funciones de reconocimiento de terreno, y tuvo su primer vuelo en 1955. Drones de reconocimiento fueron usados también en la guerra de Vietnam, en China y Corea.\\
-
-La modificación del modelo \emph{B-17 Flying Fortress} permitió utilizar varios como drones para reunir datos radiactivos en pruebas nucleares siendo enviados cerca de la nube provocada por la explosión. Esto ocurrió en las pruebas realizadas en el Atolón Bikini.\\
-
-En la década de los 70 fueron desarrollados en Israel varios modelos importantes. El \emph{Firebee 1241} fue diseñado a partir del \emph{Firebee} estadounidense, y se usó con funciones de reconocimiento y como señuelo.\\
-
-El \emph{Scout} fue un modelo ligero y pequeño difícil de detectar y derribar que transmitía datos procedentes de su radar, que realizaba barridos de 360º. Ya en los 80, Israel y EEUU desarrollaron el \emph{Pioneer}. Este UAV podía volar por trayectorias pre-programadas, con piloto automático o controlado desde tierra. Era necesario monitorizar la posición del Pioneer con un enlace radio. Contaba con una autonomía de 5'5 horas. El ejército estadounidense lo utilizó en la Guerra del Golfo.\\
-
-
-\subsubsection{Clasificación y usos}
+\subsection{Clasificación y usos}
 
 Podemos encontrar varios tipos de drones atendiendo a su forma y componentes materiales. Los UAV de ala fija son similares a pequeños aviones y despegan y aterrizan del mismo modo. Estos son capaces de alcanzar altas velocidades. Un ejemplo es el UAV MAVinci. Otro tipo es el de fuselaje sustentador, el cual carece de alas y se sirve del propio cuerpo para producir la fuerza de sustentación que le permite volar. Los de ala rotatoria se asemejan a los helicópteros. Suelen tener cuatro o más motores (cuadricópteros, octocópteros, etc). Tienen la ventaja de poder permanecer cernidos en un punto fijo. Ejemplos de cuadricópteros son el Phantom 4 de DJI y el ArDrone 2.0 de Parrot.\\
 
@@ -90,10 +29,11 @@ En la actualidad los UAV tienen utilidad en múltiples campos. Algunos de ellos 
  \item \textbf{Sondas de investigación.} Es posible enviar UAV para obtener datos a partir de sus sensores o tomar muestras de partículas, microorganismos, etc. Por ejemplo, se han realizado estudios de huracanes por medio de medidas de presión y temperatura tomadas por UAV enviados al huracán.
  \item \textbf{Rescates.} Es más eficiente para rescatar personas que hayan sufrido accidentes en el mar, montañas, u otras zonas de difícil acceso, o bien víctimas de desastres naturales, contar con la ayuda de UAV que faciliten la localización de supervivientes.
  \item \textbf{Detección de incendios.} Otra utilidad es la detección de focos de fuego, por ejemplo en incendios forestales. En general son útiles para la conservación de reservas naturales o zonas protegidas.
+ \item \textbf{Agricultura de precisión}. A través del uso de UAV conseguimos un estudio de las parcelas agrícolas más detallado y preciso, de manera que pueden aplicarse tratamientos de manera localizada. Permite reducir constes, mejorar la rentabilidad de los cultivos y disminuye el impacto ambiental al poder aplicarse productos agroquímicos directamente y exclusivamente a las zonas afectada
 \end{itemize}
 
 
-\subsubsection{Cuadricópteros}\label{sec:quadrotors}
+\subsection{Cuadricópteros}\label{sec:quadrotors}
 
 Dentro de todos los tipos diferentes de vehículos UAV vamos a centrarnos en los cuadricópteros, y aunque no es necesario es conveniente que hablemos sobre la física que hace posible el vuelo de estos robots.\\
 
@@ -128,12 +68,98 @@ Para provocar un giro en sentido horario será preciso aumentar la potencia en l
 El movimiento hacia delante-atrás o hacia la derecha-izquierda se consigue disminuyendo la potencia de los rotores que estén en el lado hacia el cual se deba desplazar y aumentando los del lado contrario en igual proporción si el drone debe permanecer a una altura fija. Es decir, para movernos hacia la derecha habrá que disminuir la potencia de los rotores derechos y aumentar la de los izquierdos, de forma que el drone se incline hacia la derecha y la fuerza de sustentación tenga una componente horizontal no nula.\\
 
 
-\section{Sistemas de control de drones}
-\label{cap:controldrones}.
+\subsection{Aplicaciones hoy en día}
+
+Debido al auge de los cuadricópteros en los últimos tiempos se han desarrollado proyectos con los cuadricópteros como elemento principal muy interesantes unas y muy eficaces a la hora de resolver ciertos problemas otras.\\
+
+\subsubsection{Lily Drone} 
+
+Lily\footnote{https://www.lily.camera} es un cuadricóptero de reducidas dimensiones y peso (1.3kg) el cuál va equipado con una cámara capaz de grabar vídeo hasta resolución de alta definición a 1080p y 120fps.\\
+
+Lo más llamativo de este drone no son sus capacidades de vuelo ya que sólo nos permite vuelos de hasta 15 metros de altura y unos 40km/h de velocidad, si no que simplemente llevando un dispositivo de detección de reducidas dimensiones (28g), lo enciendes y él, sin necesidad de configuración, te detecta y sigue todos tus movimientos mientras a la vez te está grabando. Los vuelos son de unos 20 minutos de duración, y el drone es resistente al agua, por lo que puedes usarlo prácticamente en cualquier tipo de situación.\\
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{lily1}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1\textwidth]{lily2}
+\caption{Lily (a) y funcionamiento en 3 pasos (b).}
+\label{fig:lily}
+\end{figure}
+
+
+\subsubsection{Hemav, Agricultura de precisión.}
+
+La empresa Hemav\footnote{http://hemav.com} ofrece entre otros servicios agricultura de precisión a través del vuelos con cuadricópteros. Utilizan sensores multiespaciales y/o térmicos para generar mapas aéreos mediante vuelos autónomos que su suministran información relevante para la toma de decisiones.\\
+
+Posteriormente esa información es analizada estadísticamente para generar patrones de estados, similitudes de terreno, detección de patologías, etc, con los que finalmente se genera un informe con las conclusiones especificas.\\
+
+\begin{figure}[h]
+\centering
+  \begin{subfigure}[]{60mm}
+    \includegraphics[width=60mm]{hemav2}
+    \caption{Hemav.} 
+  \end{subfigure}
+  \hspace{5pt}
+  \begin{subfigure}[]{60mm}
+    \includegraphics[width=60mm]{hemav1}
+    \caption{Finca acotada para el vuelo autónomo.}
+  \end{subfigure}
+  \label{fig:hemav}
+\end{figure}
+
+
+\subsubsection{Entrega de paquetes a través de drones.}
+
+La entrega de paqueteria usando vehiculos aéreos no tripulados es el futuro, aunque ya muy presente en cuanto a la entrega de paquetes a domicilio se refiere. Las funcionalidades son muy numerosas, desde entrega de comida o compras realizadas a domicilio, hasta entrega de medicamentos o comida a personas en apuros o situaciones peligrosas.\\
+
+Empresas como Amazon con su proyecto \emph{Prime Air} (figura \ref{fig:amazon}), DHL, Google con \emph{Project Wing} o la NASA están trabajando para desarrollar sus propios sistemas de entrega de paquetería a domicilio a través de drones.\\
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{amazon}
+\caption{Amazon Prime Air}
+\label{fig:amazon}
+\end{figure}
+
+\subsubsection{Drones en salvamento marítimo.}
+
+La Agencia de Medios de Vodafone (MEC) y los expertos de Trabajos con Dron\footnote{trabajoscondrone.com} (TcD) han desarrollado un proyecto de drones socorristas. Estos reducen hasta en tres vees el tiempo en llegar al ugar del accidente con respecto al socorrista tradicional.\\
+
+En caso de incidente, el socorrista-piloto conducirá el drone con el mando de radiocontrol ayudándose de la cámara que lleva a bordo, cuando llega al punto de incidencia lanzara un par de flotadores a los que se pueden agarrar hasta que llegue el equipo de salvamento.\\
+
+ \begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{socorrista}
+\caption{Drone de Salvamento Marítimo}
+\label{fig:amazon}
+\end{figure}
+
+\subsubsection{Drones en el cine y televisión.}
+
+Hace tiempo que los robots teledirigidos participan en los rodajes, pero solo recientemente han pasado a de tener un papel secundario a convertirse en protagonistas. En la industria cinematográfica se ha añadido el uso del drone para grabar escenas que antes eran complicadas, costosas o imposibles de grabar. Han cobrado tanta importancia que hasta han creado certámenes como el \emph{Flying Robot International Film Festival} para premiar la su uso en la grabación. Los drones nos proporcionan nuevas perspectivas en todo tipo de secuencias.\\
+
+Peliculas como el Lobo de Wall Street, Jurassic World o Skyfall han incorporado entre sus métodos de grabación la utilización de drones. También se utilizan en el mundo de la televisión. Entre otros el famoso programa inglés \emph{Top Gear} o el documental de la BBC Planeta Tierra.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{dronefilm}
+\caption{Uso de un drone para grabación.}
+\label{fig:amazon}
+\end{figure}
+
+
+
+\subsection{Sistemas de control de drones}
+\label{cap:controldrones}
 
 Los drones pertenecen a la rama de robótica aérea, pero a su vez también son vehículos aéreos no tripulados (\emph{UAV, Unmanned  Aerial Vehicle}). Es un vehículo no tripulado, pero no autónomo, por lo que necesitan ser teleoperados desde tierra. Los sistemas actuales para ello se pueden dividir en dos grupos, los controlados mediante radiofrecuencia y los que usan sistemas alternativos.\\
 
-\subsection{Radiocontrol}
+\subsubsection{Radiocontrol}
 
 Es la técnica que permite el gobierno de un objeto a distancia de manera inalámbrica mediante una emisora de control remoto. Por otra parte, a bordo del vehículo, en nuestro caso un drone, debe ir una receptora de radio control. \\
 
@@ -149,7 +175,7 @@ La comunicación entre receptor y transmisor se efectúa mediante radiofrecuenci
 
 Estos sistemas tienen varias limitaciones. Una es el número de canales máximo del sistema, ya que se usa un canal para cada elemento de control disponible: elevación, giro, rotación… La segunda y posiblemente más crítica son las interferencias. Si se producen interferencias ya sea por ruido o por varios emisores trabajando en las cercanías se puede perder el control de la aeronave produciendo una posible colisión, destruir la misma o incluso dañar a personas.\\
  
-\subsection{Sistemas alternativos}
+\subsubsection{Sistemas alternativos}
 
 En la actualidad a parte del radiocontrol tenemos el control a través de WiFi. Este sistema consiste en la creación de una red WiFi por parte del drone a la cual se conecta el dispositivo con el que se maneja. Este dispositivo puede ser un mando diseñado y comercializado por la propia marca o un dispositivo móvil, el cuál usa una aplicación que es la que gestiona la conexión y transferencia de datos.\\
 
@@ -161,7 +187,7 @@ La empresa francesa Parrot, la cual tiene una flota de diversos modelos de drone
 
 
 
-\section{Tecnologías de Comunicación a Distancia en Tiempo Real}
+\section{Tecnologías de Comunicación Tiempo Real}
 
 En la actualidad  existen numerosas tecnologías de comunicación en tiempo real, pero nos centraremos en las que nos ofrecen conectividad multimedia. Primero veremos protocolos que se pueden implementar en aplicaciones de escritorio, y posteriormente veremos los protocolos web mas actuales.\\
 
@@ -287,7 +313,7 @@ Surveillance 5.1 desarrollado por Edgar Barrero como su Trabajo Fin de Grado. Es
 \end{figure}
 
 
-\subsection{Tecnologías web en plataforma robótica JdeRobot}
+\subsection{Teleoperadores y visores Web en JdeRobot}
 
 Esta plataforma está desarrollada por Aitor Martínez como su Trabajo Fin de Grado. Está compuesta por seis clientes Web: CameraViewJS, RGBDViewerJS, KobukiViewerJS, UavViewerJS, IntrorobKobukiJS e IntrorobUavJS, los cuales son las versiones web de las herramientas homónimas desarrolladas por JdeRobot. Estas nuevas herramientas hablan directamente con los servidores desarrollados por JdeRobot para acceder a los sensores y robots, y como diferencia principal destacable no necesitan de servidores intermedios para funcionar, utilizando \emph{websockets} para establecer las conexiones necesarias.\\
 
