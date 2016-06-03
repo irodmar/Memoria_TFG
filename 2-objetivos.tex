@@ -2,47 +2,56 @@
 
 Una vez situado el Trabajo Fin de Grado en su contexto vamos a presentar los objetivos que nos marcamos para la realización del mismo. Los objetivos a abordar son tres, los cuáles expongo a continuación.
 
+\section{Objetivos}
+\subsection{Conexión local}
 
-\section{Conexión con ArDrone 2.0}
+Como primer objetivo tenemos que desarrollar una conexión directa con el drone. Esta conexión tiene que ser bidireccional, ya que tenemos que acceder a los sensores y actuadores del drone, así como a su cámara, pero también es necesario mandarle ordenes de movimiento.\\
 
-JdeRobot tiene aplicaciones  como \emph{introrob\_py} desarrolladas en Python o en C++ que se conectan directamente con el cuadricóptero ArDrone de Parrot. Estas aplicaciones solo se pueden ejecutar bajo un sistema operativo Linux. El objetivo es desarrollar una aplicación que sea capaz de conectarse al drone directamente desde el navegador, de tal manera que la aplicación sea multiplataforma.\\
-
-Esta conexión deberá ser capaz de recoger los datos de los sensores y enviarle las órdenes de movimiento a la vez y en tiempo real.\\
+Como requisito fundamental para esta conexión es que tiene que ser en tiempo real y que sea lo suficientemente fluida y ligera como para que no introduzca ningún tipo de retardo.\\
 
 
-\section{Control del drone a través de WebRTC}
+\subsection{Conexión remota}
 
-Como objetivo principal del proyecto tenemos que implementar la tecnología WebRTC para teleoperar el drone. La conexión punto a punto deberá realizarse entre el ordenador que realiza la conexión con el cuadricóptero y un segundo ordenador. Durante toda la memoria nos referiremos como ordenador local o par local al mini-ordenador que usaremos para conectarnos al cuadricoptero y el cuál deberá ir a bordo del drone, y ordenador remoto o par remoto al ordenador desde el cuál teleoperaremos el vehículo.\\
+El segundo punto con el que nos enfrentamos es utilizar una tecnología web moderna y actual con la que poder teleoperar el drone. Esta tecnología tiene que ser lo suficientemente versátil como para poder implementarla en nuestro proyecto. Por otro lado, al igual que la conexión local, tiene que ser bidireccional, poder transportar audio y vídeo e introducir el mínimo retraso en la comunicación posible para tener una experiencia positiva y controlada del vuelo del drone.\\
 
-La conexión WebRTC será bidireccional, y deberá ser capaz de transportar contenido multimedia y datos. La aplicación deberá usar WebRTC para las cumplir las siguientes funcionalidades:
+Esta conexión deberá realizarse entre el ordenador local y un segundo ordenador, que será desde el que el usuario podrá teleoperar el vehículo.\\
+
+Durante toda la memoria nos referiremos como ordenador local, par local o navegador local al dispositivo que usaremos para conectarnos al cuadricoptero y el cuál deberá ir a bordo del drone, y ordenador remoto, par remoto o navegador remoto al ordenador desde el cuál teleoperaremos el vehículo.\\
+
+Como sub-objetivos para esta conexión tenemos los siguientes:
 
 \begin{itemize}
 
-\item \emph{Visualización de cámara a bordo.} WebRTC tendrá que acceder al hardware conectado al equipo local y obtener un flujo audiovisual de la cámara. Este flujo tendrá que ser también enviado usando la misma tecnología web desde el ordenador localhacia el ordenador remoto.
+\item \emph{Visualización de cámara a bordo:} La conexión tiene que ser capaz de transportar el flujo audiovisual de la cámara del drone desde el navegador local hasta el navegador remoto.
 
 \item \emph{Sensores de navegación.} Los datos obtenidos de los sensores de navegación del cuadricoptero deberán ser enviados al ordenador remoto donde se visualizaran.
 
-\item \emph{Localización espacial del drone.}La brujula y GPS del cuadricoptero deberán ser recogidas por el ordenador local, y deberán enviarse al ordenador remoto para poder visualizar en este un mapa para tener localizado el vehículo.
+\item \emph{Localización espacial del drone.}La brújula y GPS del cuadricóptero deberán ser recogidas por el ordenador local, y deberán enviarse al ordenador remoto para poder visualizar en este un mapa para tener localizada la posición del vehículo.
 
 \item \emph{Ordenes}. Desde el ordenador remoto deberán enviarse hacia el ordenador local las ordenes dadas para el aterrizaje, despegue, y comandos de movimiento.
 
 
 \end{itemize}
 
-De manera general, el ordenador local deberá conectarse al drone, recoger datos de los sensores y la cámara y entregarle las órdenes. Por otro lado, deberá ser también un par de la conexión WebRTC, y enviar al par remoto todos los datos recogidos en el drone además de la cámara, y recibir de este las órdenes y entregárselas al drone.\\
+De manera general el par local deberá establecer la conexión con el drone, acceder a sus sensores y a su cámara. Deberá también establecer una conexión con el ordenador remoto y enviarle todos estos datos obtenidos del drone. Del par remoto recibirá las ordenes y comandos de movimiento, que deberá enviárselos al drone.\\
 
-El ordenador remoto deberá recibir todos los datos de navegación y la cámara del par local, y por otro lado enviar las órdenes y comandos de movimiento al par local. En la figura \ref{fig:esquemageneral} tenemos un esquema de la estructura general del proyecto.\\
+El par remoto deberá establecer la conexión con el par local. De este recibirá todos los datos del drone y deberá representarlos de una manera que el usuario final pueda conocer la situación de vuelo del drone en cada momento. Deberá tener una interfaz amigable que le permita recoger las órdenes de movimiento dadas por el usuario, y enviárselas al par local.\\
+
+En la figura \ref{fig:esquemageneral} tenemos un esquema de la estructura general del proyecto.\\
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.9\textwidth]{esquema_general}
+\includegraphics[width=0.9\textwidth]{conexiones}
 \caption{Esquema general del proyecto}
 \label{fig:esquemageneral}
 \end{figure}
 
-\section{Interfaz amigable y actual}
+\subsection{Interfaz amigable y actual}
 
-Uno de los requisitos es desarrollar una interfaz clara, que nos muestre de una manera lo mas realista posible los datos recogidos de los sensores del drone, la cámara, y que tenga unos controles que nos permita manejar el cuadricóptero.\\
+Uno de los requisitos es desarrollar una interfaz clara, que nos muestre de una manera lo mas realista, clara y concisa posible los datos recogidos de los sensores del drone y la cámara para permitirnos conocer el estado de vuelo del drone en cada momento: altitud, inclinación, velocidad...\\
+
+
+Para que la satisfacción de vuelo sea satisfactoria la interfaz tiene que tener unos controles de movimiento que sean sencillos, simples e intuitivos.\\
 
 Esta interfaz deberá realizarse con tecnología web actual y moderna, y deberá permitirnos el manejo del cuadricóptero de la forma mas realista y similar posible a los sistemas de control de drones que hemos hablado en el capítulo \ref{cap:controldrones}.\\
 
@@ -75,10 +84,9 @@ El plan de trabajo para todo el proyecto se puede dividir en las siguientes etap
 
 \begin{itemize}
 \item \textbf{Familiarización con JdeRobot}: Primer contacto con esta plataforma y sus herramientas para conocer su funcionamiento.
-\item \textbf{Aprendizaje de tecnologías web necesarias:} Conocer las tecnologías web que van a ser necesarias para el desarrollo del proyecto. Entre ellas se encuentra HTML5, CSS3, WebGL, ThreeJS, o jQuery. Primer contacto también con el \emph{middleware} ICE.
-\item \textbf{Aprendizaje WebRTC}: Aprendizaje a fondo de esta tecnología web que sera la base del proyecto.
-\item \textbf{Desarrollo WebRTC}: Desarrollo de la parte correspondiente a WebRTC dentro de la aplicación.
-\item \textbf{Desarrollo uavviwer\_js}: Crear toda la infraestructura necesaria para la interconexión entre el navegador y el drone.
+\item \textbf{Aprendizaje de tecnologías web necesarias:} Conocer las tecnologías web que van a ser necesarias para el desarrollo del proyecto. Entre ellas se encuentra WebRTC, HTML5, CSS3, WebGL, ThreeJS, o jQuery. Primer contacto también con el \emph{middleware} ICE.
+\item \textbf{Desarrollo de la conexión local:} Creacion de toda la infraestructura necesaria para la interconexión entre el navegador local y el drone.
+\item \textbf{Desarrollo conexión remota}: Desarrollo de la conexión remota que interconectara los dos pares.
 \item \textbf{Desarrollo interfaz}: Desarrollo de la interfaz amigable para teleoperar el drone.
 \item \textbf{Experimentos}: Primero se realizan pruebas con el simulador, y cuando el código este suficientemente maduro se prueba con un drone real.
 \end{itemize}

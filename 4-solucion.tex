@@ -20,52 +20,6 @@ Como ya se comento en la sección \ref{sec:senalizacion} el momento en el que se
 
 
 
-\section{Señalización}
-
-Las necesidades que que necesitamos cubrir en cuento al servidor de señalización es que sea capaz de intercambiar los datos de red necesarios (Candidatos ICE) y de paquetes SDP. El intercambio debe hacerse con el protocolo de oferta/respuesta según lo establecido en la arquitectura JSEP explicada con anterioridad.\\
-
-Se ha optado por desarrollar el servidor escrito en el lenguaje de programación \emph{Node.js}\footnote{https://nodejs.org/}. Las razones por las que hemos elegido este servidor es que está escrito en JavaScript, por lo que nos resulta muy útil al utilizarse el mismo lenguaje de programación que vamos a utilizar para el resto del proyecto. Por otro lado es un servidor muy liviano.\\
-
-Para cumplir con la arquitectura JSEP vamos a utilizar la librería \emph{Socket.io}\footnote{http://socket.io}, la cuál nos facilita el desarrollo de aplicaciones con necesidades de conexión entre equipos a traves de Websockets.\\
-
-Como se puede ver en la figura anterior, al servidor se le envían 4 tipos de paquetes. Cuando se conecta el par local, cuando se conecta el par remoto, intercambio de candidatos ICE e intercambio de SDP. Sabiendo que tanto los candidatos ICE como los paquetes SDP son objetos, decidimos crear el servidor aceptando tres diferentes tipos de paquetes: el inicial del par local, el inicial del par remoto, y mensajes genéricos que contendrían los objetos anteriormente mencionados. Así pues, esta es la forma del código que gestiona en el servidor el intercambio de paquetes para la señalización.\\
-
-\begin{lstlisting}[caption=Ejemplo paquete SDP]
-
-io.sockets.on('connection', function (socket){
-
-	// Manejaador de mensajes genericos 'message' (intercambios SDP y Candidatos ICE)
-	socket.on('message', function (message) {
-		//log('Server --> got message: ', message);
-		// Si el que envia es Droner hay que mandarlo al remote
-		if (socket.id == dronerID) {
-			io.sockets.socket(newPeer).emit('message', message);
-		// Si el que envia es remote hay que mandarselo al droner
-		} else if (socket.id== newPeer) {
-			io.sockets.socket(dronerID).emit('message', message);
-		} 
-	});
-
-	// manejador de mensjes 'create'  enviados por Droner
-	socket.on('create', function () {
-		//log('Server --> Droner has sido conectado');
-		socket.join();
-		dronerID = socket.id;
-		socket.emit('created');
-	});
-	
-
-	// Manejador de mensajes 'join remote ' enviados por remote
-	socket.on('join remote', function () {
-		//log("Server --> Un 'remote' se ha unido.");
-		
-		io.sockets.in().emit('join remote');
-		socket.join();
-		newPeer = socket.id;
-		socket.emit('joined');
-	});
-});
-\end{lstlisting}
 
 
 \section{Conexión con la API del drone}
@@ -127,6 +81,53 @@ ImuPlugin.Endpoints=default -h localhost -p 9000:ws -h 0.0.0.0 -p 19000
 A parte de los \emph{endpoints} es también importante configurar bien el nombre de cada uno de las interfaces, ya que será necesario para una correcta conexión desde el navegador.\\
 
 \section{Uso WebRTC control drone}
+\subsection{Señalización}
+
+Las necesidades que que necesitamos cubrir en cuento al servidor de señalización es que sea capaz de intercambiar los datos de red necesarios (Candidatos ICE) y de paquetes SDP. El intercambio debe hacerse con el protocolo de oferta/respuesta según lo establecido en la arquitectura JSEP explicada con anterioridad.\\
+
+Se ha optado por desarrollar el servidor escrito en el lenguaje de programación \emph{Node.js}\footnote{https://nodejs.org/}. Las razones por las que hemos elegido este servidor es que está escrito en JavaScript, por lo que nos resulta muy útil al utilizarse el mismo lenguaje de programación que vamos a utilizar para el resto del proyecto. Por otro lado es un servidor muy liviano.\\
+
+Para cumplir con la arquitectura JSEP vamos a utilizar la librería \emph{Socket.io}\footnote{http://socket.io}, la cuál nos facilita el desarrollo de aplicaciones con necesidades de conexión entre equipos a traves de Websockets.\\
+
+Como se puede ver en la figura anterior, al servidor se le envían 4 tipos de paquetes. Cuando se conecta el par local, cuando se conecta el par remoto, intercambio de candidatos ICE e intercambio de SDP. Sabiendo que tanto los candidatos ICE como los paquetes SDP son objetos, decidimos crear el servidor aceptando tres diferentes tipos de paquetes: el inicial del par local, el inicial del par remoto, y mensajes genéricos que contendrían los objetos anteriormente mencionados. Así pues, esta es la forma del código que gestiona en el servidor el intercambio de paquetes para la señalización.\\
+
+\begin{lstlisting}[caption=Ejemplo paquete SDP]
+
+io.sockets.on('connection', function (socket){
+
+	// Manejaador de mensajes genericos 'message' (intercambios SDP y Candidatos ICE)
+	socket.on('message', function (message) {
+		//log('Server --> got message: ', message);
+		// Si el que envia es Droner hay que mandarlo al remote
+		if (socket.id == dronerID) {
+			io.sockets.socket(newPeer).emit('message', message);
+		// Si el que envia es remote hay que mandarselo al droner
+		} else if (socket.id== newPeer) {
+			io.sockets.socket(dronerID).emit('message', message);
+		} 
+	});
+
+	// manejador de mensjes 'create'  enviados por Droner
+	socket.on('create', function () {
+		//log('Server --> Droner has sido conectado');
+		socket.join();
+		dronerID = socket.id;
+		socket.emit('created');
+	});
+	
+
+	// Manejador de mensajes 'join remote ' enviados por remote
+	socket.on('join remote', function () {
+		//log("Server --> Un 'remote' se ha unido.");
+		
+		io.sockets.in().emit('join remote');
+		socket.join();
+		newPeer = socket.id;
+		socket.emit('joined');
+	});
+});
+\end{lstlisting}
+
 \subsection{Transmisión de la cámara a bordo}
 \subsection{Sensores de navegación}
 \subsection{Órdenes}
