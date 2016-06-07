@@ -54,10 +54,16 @@ La versión utilizada en el proyecto ha sido la 5.3.1, última versión estable 
 
 \begin{itemize}
 \item \emph{Plugin de Gazebo}: Desarrollado por JdeRobot para añadir el ArDrone a Gazebo con las mismas funcionalidades al drone real. Este plugin nos permite abstraernos de las conexiones a mas bajo nivel, como la lectura de sensores o en envío de comandos a los motores, simplificando el acceso a los mismo y obteniendo los datos con una simple llamada a función.
-\item \emph{ArDroneServer}: Este componente es el encargado de comunicarse directamente con el ArDrone real, ejecutar las funciones y comandos de bajo nivel para obtener los datos y valores de los sensores, y ejecutar las funciones neccesarias sobre los motores y actuadores según las órdenes de movimiento dadas. 
+
+\item \emph{ArDroneServer}: Este componente es el encargado de comunicarse directamente con el ArDrone real, ejecutar las funciones y comandos de bajo nivel para obtener los datos y valores de los sensores, y ejecutar las funciones necesarias sobre los motores y actuadores según las órdenes de movimiento dadas. De cara al usuario ofrece seis interfaces ICE, a las que puedes conectar tu aplicación. En la figura \ref{fig:ardroneserver} puedes ver la estructura general del componente.
 \end{itemize}
 
-
+\begin{figure}[htb]
+\centering
+\includegraphics[width=1\textwidth]{ardroneserver}
+\caption{Estructura de ArDrone\_Server}
+\label{fig:ardroneserver}
+\end{figure}
 
 \section{ICE}
 
