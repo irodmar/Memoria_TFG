@@ -459,7 +459,7 @@ var ICE_config = {
 
 \end{lstlisting}
 
-Una vez tenemos las variables configuradas, la forma en la que creamos la conexión WebRTC es la siguiente:
+Una vez tenemos las variables configuradas, la forma en la que creamos la conexión WebRTC es la siguiente:\\
 
 \begin{lstlisting}[caption=RTCPeerConnection.]
 
@@ -467,8 +467,108 @@ var PeerConnection = new RTCPeerConnection(ICE_config, pc_constraints);
 
 \end{lstlisting}
 
-Esta función admite dos argumentos. El primero es la configuración ice que ya hemos visto y el segundo es una variable con as restricciones de todas las funcionalidades y configuraciones que tiene RTCPeerConnection. En nuestro caso esa variable está vacía ya que la configuración por defecto es más que adecuada para nuestros intereses.\\
+Esta función admite dos argumentos. El primero es la configuración ice que ya hemos visto y el segundo es una variable con las restricciones de todas las funcionalidades y configuraciones que tiene RTCPeerConnection. En nuestro caso esa variable está vacía ya que la configuración por defecto es más que adecuada para nuestros intereses.\\
 
+Para que el intercambio de paquetes en la señalización hay que crear los manejadores que RTCPeerConnection necesita para los SDP y para los Candidatos ICE. El par local tiene sus manejadores ya que es el encargado de llevar la batuta de la conexión, y en el par remoto tienen otros manejadores difentes. \\
+
+Los SDP se manejan en el par local con el método \emph{createOffer} que al ser llamado activa el proceso de crear la oferta SDP. Cada vez que crea uno nuevo salta un evento en la función que se le ha indicado, llamada \emph{gotLocalDescription}. Esta función se encarga de ajustar el SDP local al SDP que se acaba de crear y de mandárselo al otro par a través del servidor de señalización. Si al crear un SDP se produce un error se llama a la función de error, la cual se encargara de notificárnoslo en la consola del navegador.\\
+
+
+\begin{lstlisting}[caption={Manejandor de los SDP.}, label={lst:manejadorsdp}]
+
+// Funcion de exito
+function gotLocalDescription(sessionDescription){
+  PeerConnection.setLocalDescription(sessionDescription, successLocalSDP, errorLocalSDP);
+  sendMessage(sessionDescription);
+}
+
+// Funcion de error
+function onSignalingError(error){
+  console.log('Fallo al crear el SDP: ' + error);	
+}
+
+// Metodo manejador de las SDP
+PeerConnection.createOffer(gotLocalDescription, onSignalingError);
+
+\end{lstlisting}
+
+Esta oferta es recibida en el par remoto a través del servidor de señalización y se guarda como la oferta del otro par, ya que la necesitaremos para conocer las características del flujo audiovisual que nos llegará:\\
+
+
+\begin{lstlisting}[caption={Estableciendo SDP del par remoto.}]
+PeerConnection.setRemoteDescription(new RTCPSessionDescription(message));
+\end{lstlisting}
+
+Al establecer el SDP remoto ocurre un evento del método \emph{createAnswer} y crea una respuesta a la oferta recibida.\\
+
+\begin{lstlisting}[caption=Manejandor de respuestas SDP]
+PeerConnection.createAnswer(gotLocalDescription, onSignalingError);
+\end{lstlisting}
+
+
+Las funciones de éxito y error \emph{gotLocalDescription} y \emph{onSignalingError} son las mismas que en el otro par, hemos mostrado su código en el listing \ref{lst:manejadorsdp}.\\
+
+Para manejar los Candidatos ICE utilizamos un método manejador \emph{onicecandidate}, el cuál llama a la función indicada, \emph{handleIceCandidate()}, en el momento en que se encuentra un Candidato ICE. Esta función se encarga de enviar el candidato a través del servidor de señalización. Ambos pares usan este mismo evento con la misma configuración.\\
+
+\begin{lstlisting}[caption=Manejandor de los Candidatos ICE locales.]
+
+function handleIceCandidate(event){
+  //console.log('handleIceCandidate event: ', event);
+  if (event.candidate) {
+    sendMessage({
+    type: 'candidate',
+    label: event.candidate.sdpMLineIndex,
+    id: event.candidate.sdpMid,
+    candidate: event.candidate.candidate});
+  } else {
+    console.log('End of candidates.');
+  }
+    // console.log('Local ICE candidate: \n' + event.candidate.candidate);
+  
+}
+
+// Metodo manejador de candidatos ICE
+PeerConnection.onicecandidate = handleIceCandidate; // Manejador ICE local (manda ICE local a remoto)
+
+\end{lstlisting}
+
+Los candidatos son recibidos en los pares a través del servidor de señalización. Se crea el candidato y se le añade como candidato remoto con el método \emph{addIceCandidate}.\\
+
+\begin{lstlisting}[caption=Manejandor de los Candidatos ICE remotos.]
+var candidate = new RTCIceCandidate({sdpMLineIndex:message.label,candidate:message.candidate});
+PeerConnection.addIceCandidate(candidate);
+\end{lstlisting}
+
+
+Uno de los puntos mas importantes para el proyecto que se tiene que encargar \emph{RTCPeerConnection} es transferir el flujo visual desde el par local al par remoto. WebRTC nos lo permite de una forma muy sencilla. En el par local, con un método al que le añadimos como argumento el flujo que hemos obtenido llamar a la API \emph{getUserMedia}:\\
+
+\begin{lstlisting}[caption=Manejandor del flujo audiovisual en el par local.]
+PeerConnection.addStream(localStream); 
+\end{lstlisting}
+
+Y en el par remoto con un método manejador llamado \emph{onaddstream}, que en el momento de saltar un evento llama a la función \emph{handleRemoteStreamAdded}, y esta se encarga de configurar el flujo en una etiqueta vídeo de HTML5.\\
+
+\begin{lstlisting}[caption=Manejandor del flujo audiovisual en el par remoto.]
+
+// Funcion manejadora
+function handleRemoteStreamAdded(event) {
+	window.remoteVideo = remoteVideo; // make avalaible on console for inspection
+    var remoteVideo = document.getElementById("droneVideo"); // 
+
+	if (window.URL){
+		remoteVideo.src = window.URL.createObjectURL(event.stream);
+	} else{
+		remoteVideo.src = event.stream;
+	}
+    //console.log('Remote stream attached!!.');
+	remoteStream = event.stream;
+}
+
+// Metodo manejador 
+PeerConnection.onaddstream = handleRemoteStreamAdded;
+\end{lstlisting}
+
+Una vez creada y establecida la conexión \emph{RTCPeerConnection} la usaremos para crear la conexión de datos \emph{RTCDataChannel}, para transportar toda la información necesaria hacia ambos lados.\\
 
 
 \subsection{RTCDataChannel}
