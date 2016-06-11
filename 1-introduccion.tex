@@ -103,7 +103,7 @@ La compañía eléctrica Endesa ha comprado una flota de catorce drones para la 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=1\textwidth]{dronendesa}
+\includegraphics[width=0.8\textwidth]{dronendesa}
 \caption{Drone de Endesa realizando labores de revisión.}
 \label{fig:lily}
 \end{figure}
@@ -289,6 +289,17 @@ Esta tecnología nos brinda la capacidad de crear numerosas aplicaciones de comu
 
 Como base para el proyecto para desarrollar la aplicación web tenemos los siguientes proyectos, desarrollados también por alumnos de la URJC. Todos estos proyectos tienen en común que utilizan como base las herramientas que nos ofrece JdeRobot.\\
 
+\subsection{ArDroneServer}
+
+ArDroneServer es un envoltorio para la plataforma JdeRobot que pertenece a la SDK de ArDrone, desarrollado por Alberto Martín como parte de su Proyecto Fin de Carrera. Esta aplicación esta inspirada en los paquetes ROS \emph{ardrone\_brown} y \emph{ardrone\_autonomy}. Implementa tres interfaces que nos permites recibir las imágenes del drone, controlar el drone y recoger información de los sensores y cambiar la configuración del drone. Junto a este servidor Alberto ha desarrollado una aplicación capaz de hacer seguimiento horizontal y vertical de objetos.\\
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{ardroneserver_alberto}
+\caption{Seguimiento horizontal usando ardrone\_server.}
+\label{fig:introrobuavjs}
+\end{figure}
+
 \subsection{Surveillance 4.0}
 
 Surveillance 4.0 es un ejemplo de conexión web con sensores y actuadores, desarrollado por Daniel Castellano como su Proyecto Fin de Carrera. Esta aplicación contaba con varios sensores de distinto tipo (humedad, temperatura, gas, etc) que se conectaban inalámbricamente con un nodo central situado en una Raspberry Pi. La conexión inalámbrica se hacía mediante transmisores Zigbee con un protocolo propio llamado WHAP. El nodo central recibía los datos de los sensores y los mostraba mediante un servidor web que corría en la misma máquina. La aplicación web se desarrolló en Python usando el entorno de desarrollo web Django. En Surveillance 4.0, los valores de los sensores se guardaban en una base de datos que la aplicación web consultaba cuando era necesario. Además, esta versión incluía un streaming de vídeo utilizando el software de código abierto M-JPEG Streamer. En la figura \ref{fig:surveillance4} se puede ver la aplicación.\\
@@ -307,7 +318,7 @@ Surveillance 4.0 es un ejemplo de conexión web con sensores y actuadores, desar
 
 
 
-\subsection{Surveillance 5.}
+\subsection{Surveillance 5.0}
 
 Otro ejemplo de conexión web con sensores y actuadores es Surveillance 5.1 desarrollado por Edgar Barrero como su Trabajo Fin de Grado. Esta aplicación obtenía un flujo de imágenes de una cámara web, un flujo de imágenes de profundidad de un sensor Kinect, además de datos de un sensor de humedad y de interaccionar con un actuador. La aplicación web se desarrolló en Ruby sobre Rails. En Surveillance 5.1, el servidor web se conectaba a los componente de JdeRobot mediante sus interfaces ICE. La aplicación web refrescaba estos datos mediante peticiones AJAX.  En la figura \ref{fig:surveillance5} se puede ver la aplicación.\\
 
@@ -347,13 +358,13 @@ Un ejemplo ya sin servidores intermedios, directo entre sensores, robots y naveg
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\textwidth]{introrobuavjs}
-\caption{Cliente web IntrorobUavJS}
+\includegraphics[width=0.9\textwidth]{uavviewerjs_aitor}
+\caption{Cliente web UavViewer.js}
 \label{fig:introrobuavjs}
 \end{figure}
 
 
-En el proyecto que aquí se presenta se desarrolla una aplicación web capaz de teleoperar un cuadricoptero usando los servidores desarrollados por JdeRobot para conectarnos al drone, sus sensores y actuadores, y añadiendo la tecnología web de última generación \emph{WebRTC} para establecer la conexión entre el ordenador que se comunicará con el drone y el ordenador remoto, desde el cuál se podrán ver los valores de los sensores y la cámara a bordo del drone, además como ya he mencionado, de teleoperarlo. Estas conexiones se realizarán sin el uso de servidor intermedio, usando tecnologías en tiempo real que se conectarán mediante \emph{WebSockets} de \emph{JavaScript}.\\
+En el proyecto que aquí se presenta se desarrolla una aplicación web capaz de teleoperar un cuadricóptero usando los servidores desarrollados por JdeRobot para conectarnos al drone, sus sensores y actuadores, y añadiendo la tecnología web de última generación \emph{WebRTC} para establecer la conexión entre el ordenador que se comunicará con el drone y el ordenador remoto, desde el cuál se podrán ver los valores de los sensores y la cámara a bordo del drone, además como ya he mencionado, de teleoperarlo. Estas conexiones se realizarán sin el uso de servidor intermedio, usando tecnologías en tiempo real que se conectarán mediante \emph{WebSockets} de \emph{JavaScript}.\\
 
 
-Una vez presentada la introducción y el contexto del proyecto en este capitulo, continuamos exponiendo los objetivos que nos hemos marcado en este proyecto. En el capítulo tres se habla sobre las infraestructuras software de las que disponemos y de las que podremos ayudarnos para el desarrollo del proyecto. Posteriormente en el capítulo cuatro veremos como hemos conseguido cumplir los objetivos marcados, exponiendo en el capítulo cinco las pruebas y experimentos que hemos realizado. En el sexto y último capitulo presentaremos las conclusiones del proyecto.\\
+Una vez presentada la introducción y el contexto del proyecto en este capítulo, continuamos exponiendo los objetivos que nos hemos marcado en este proyecto. En el capítulo tres se habla sobre las infraestructuras software en las que nos hemos ayudado para el desarrollo del proyecto. Posteriormente en el capítulo cuatro veremos cómo hemos conseguido cumplir los objetivos marcados, exponiendo en el capítulo cinco las pruebas y experimentos realizados. En el sexto y último capitulo presentaremos las conclusiones del proyecto.\\

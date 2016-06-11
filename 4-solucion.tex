@@ -4,6 +4,17 @@ Una vez nos hemos situado en el contexto en el que se ubica este proyecto, y hem
 
 \section{Estructura general}
 
+De manera general en cuanto a la estructura general el par local deberá establecer la conexión con el drone, acceder a sus sensores y a su cámara. Deberá también establecer una conexión con el ordenador remoto y enviarle todos estos datos obtenidos del drone. Del par remoto recibirá las ordenes y comandos de movimiento, que deberá enviárselos al drone.\\
+
+El par remoto deberá establecer la conexión con el par local. De este recibirá todos los datos del drone y deberá representarlos de una manera que el usuario final pueda conocer la situación de vuelo del drone en cada momento. Deberá tener una interfaz amigable que le permita recoger las órdenes de movimiento dadas por el usuario, y enviárselas al par local.\\
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{conexiones}
+\caption{Esquema general del proyecto.}
+\label{fig:esquemageneral}
+\end{figure}
+
 Como primer problema se presentó decidir cuál de los dos ordenadores que necesitamos para la conexión WebRTC seria el que realizaría la llamada y en que momento del flujo. Este no es un problema trivial, ya que la selección de uno u otro haría que el desarrollo de la aplicación fuese completamente distinto.\\
 
 Se optó por que el par que llevase la batuta de la conexión fuese el ordenador local, ya que este a su vez también es el encargado de  establecer la conexión con el drone. De esta manera tenemos un par que es el que actuará de maestro, estableciendo ambas conexiones en los momentos oportunos.\\
@@ -11,7 +22,7 @@ Se optó por que el par que llevase la batuta de la conexión fuese el ordenador
 Como ya se comento en la sección \ref{sec:senalizacion} el momento en el que se envía y se recibe cada paquete de información es critico en este sistema de señalización de oferta/respuesta, por lo que el flujo de la comunicación se diseñó y se ha desarrollado como se muestra en la figura \ref{fig:flujodellamada}.\\
 
 
-\begin{figure}[htb]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=1.1\textwidth]{diagrama_general}
 \caption{Flujo de llamada del proyecto}
@@ -20,9 +31,9 @@ Como ya se comento en la sección \ref{sec:senalizacion} el momento en el que se
 
 Como se puede observar el par local es el que lleva la batuta de la conexión. En primer término inicia la comunicación con el servidor de señalización. Una vez que este le contesta afirmativamente a su mensaje de creación de la comunicación inicia un proceso en el que se conecta al cuadricóptero y accede a la cámara. Una vez realizados estos dos procesos espera a que un par remoto quiera unirse a la conexión.\\
 
-Cuando el par remoto accede a servidor de señalización, este le envia un mensaje al par local indicando que un par remoto se ha conectado. En este momento el par local inicia la creación de la conexión \emph{RTCPeerConection} de WebRTC. Primero se produce el intercambio de paquetes SDP a través del servidor de señalización, y posteriormente el de ICE. Una vez finalizados ambos ya tenemos establecida la conexión WebRTC entre ambos pares.\\
+Cuando el par remoto accede a servidor de señalización, este le envía un mensaje al par local indicando que un par remoto se ha conectado. En este momento el par local inicia la creación de la conexión \emph{RTCPeerConection} de WebRTC. Primero se produce el intercambio de paquetes SDP a través del servidor de señalización, y posteriormente el de ICE. Una vez finalizados ambos ya tenemos establecida la conexión WebRTC entre ambos pares.\\
 
-\section{Conexión con la API del drone}
+\section{Conexión local}
 
 Esta primera parte la hemos solucionado dividiendo el problema en dos subproblemas. Por un lado la conexión con el servidor encargado de conectarse al cuadricóptero, \emph{ardone\_server}, y por otro obtener un flujo de vídeo para poder visualizarlo en la parte remota. Este problema lo hemos solucionado incorporando una cámara a bordo del drone que ira conectada al par local y a la cual accederemos desde el navegador con la API getUserMedia que nos brinda WebRTC.\\
 
@@ -352,9 +363,25 @@ Sólo accedemos al vídeo de la cámara, ya que el audio no lo necesitamos para 
 
 El flujo que nos proporciona \emph{getUserMedia} lo utilizaremos con \emph{RTCPeerConnection} en para enviárselo al par remoto.\\
 
-\section{Uso WebRTC para el control del drone}
+\section{Conexión multimedia entre navegadores}
 
-Interconectar el ordenador remoto al drone a través de otro ordenador es el segundo de los objetivos marcados. Para ello vamos a utilizar WebRTC y por su comunicación entre pares. El primer paso es construir un servidor de señalizacion.\\
+Interconectar el ordenador remoto al drone a través de otro ordenador es el segundo de los objetivos marcados. Para ello vamos a utilizar WebRTC por su comunicación entre pares sin necesidad de utilizar servidores intermedios.\\
+
+Como sub-objetivos para esta conexión tenemos los siguientes:
+
+\begin{itemize}
+
+\item \emph{Visualización de cámara a bordo:} La conexión tiene que ser capaz de transportar el flujo audiovisual de la cámara del drone desde el navegador local hasta el navegador remoto.
+
+\item \emph{Sensores de navegación.} Los datos obtenidos de los sensores de navegación del cuadricoptero deberán ser enviados al ordenador remoto donde se visualizaran.
+
+\item \emph{Localización espacial del drone.}La brújula y GPS del cuadricóptero deberán ser recogidas por el ordenador local, y deberán enviarse al ordenador remoto para poder visualizar en este un mapa para tener localizada la posición del vehículo.
+
+\item \emph{Ordenes}. Desde el ordenador remoto deberán enviarse hacia el ordenador local las ordenes dadas para el aterrizaje, despegue, y comandos de movimiento.
+
+\end{itemize}
+
+Para desarrollar la aplicación con WebRTC lo primero que hemos creado ha sido su servidor de señalización.\\
 
 \subsection{Señalización}
 
@@ -577,7 +604,7 @@ Una vez creada y establecida la conexión \emph{RTCPeerConnection} la usaremos p
 \subsubsection{Localización espacial del drone}
 
 
-\section{Interfaz amigable y actual}
+\section{Interfaz web de usuario}
 \subsection{Visualización de las imágenes}
 \subsection{Joysticks}
 \subsection{Relojes de navegación}
