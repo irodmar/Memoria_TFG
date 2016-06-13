@@ -40,7 +40,7 @@ Esta primera parte la hemos solucionado dividiendo el problema en dos subproblem
 Se explica a continuación la conexión con el servidor y posteriormente el acceso a la cámara con getUserMedia.\\
 
 
-\subsection{ArDrone\_server, ICE y WebSockets}
+\subsection{ArDrone\_server, ICE y WebSockets}\label{subsec:ardrone}
 
 Para establecer la conexión con el drone se ha utilizado el componente \texttt{ardrone\_server} de JdeRobot. Este componente tiene dos versiones, la componente simulada que es la que hemos instalado en forma de plugin en el simulador Gazebo y la componente real, que se conecta al drone real. Ambas componentes nos ofrecen las mismas interfaces de conexión, por lo que una única configuración de nuestra aplicación bastará para poder trabajar con la versión simulada y la real.\\
 
@@ -215,7 +215,7 @@ jderobot.Pose3DPrx.checkedCast(basepose3D).then(
 
 En este punto ya estamos conectados con las interfaces del servidor, y por consiguiente, con el drone. Para poder teleoperar el drone hay que crear unas funciones que serán los manejadores. Por un lado hemos creado las funciones de aterrizaje y de despegue. Estas funciones utilizan la interfaz \emph{ardrone\_extra}:\\
 
-\begin{lstlisting}[caption=Funciones aterrizaje y despegue.º]
+\begin{lstlisting}[caption=Funciones aterrizaje y despegue.]
 // extraProxy functions  
 function takeoff() {
     extraProxy.takeoff().then(
@@ -434,9 +434,9 @@ Una vez tenemos el servidor operativo vamos a explicar como hemos creado la cone
 
 \subsection{RTCPeerConnection: Transmisión de la cámara a bordo}
 
-La conexión entre pares se crea en el momento en el que el par local recibe del servidor de señalizacion un mensaje indicando que el par remoto se ha conectado y esta preparado para crear la conexión. En ese momento se ejecuta una función que configura los parámetros necesarios y  crea la comunicación.\\
+La conexión entre pares se crea en el momento en el que el par local recibe del servidor de señalización un mensaje indicando que el par remoto se ha conectado y esta preparado para establecer la conexión. En ese momento se ejecuta una función que configura los parámetros necesarios y  crea la comunicación.\\
 
-Al igual que getUserMedia debemos configurar las variables necesarias para que sean compatibles con todos los navegadores. Para establecer la conexión necesitamos tres variables distintas:\\
+Al igual que en getUserMedia debemos configurar las variables necesarias para que sean compatibles con todos los navegadores. Para establecer la conexión necesitamos tres variables distintas:\\
 
 
 \begin{lstlisting}[caption=Variables WebRTC]
@@ -452,7 +452,7 @@ RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate ||
 
 \begin{itemize}
 
-\item \emph{RTCPeerConnection}: Esta variable es la encargada de crear y mantener la conexión entre pares. Esta variable neesitará de las otras dos para crear la conexión.
+\item \emph{RTCPeerConnection}: Esta variable es la encargada de crear y mantener la conexión entre pares. Esta variable necesitará de las otras dos para crear la conexión.
 \item \emph{RTCPSessionDescription}: Crea los SDP locales y se encarga de gestionar los SDP recibidos.
 \item \emph{RTCIceCandidate}: Encargada de descubrir los Candidatos ICE y de gestionar los recibidos del otro par.
 
@@ -567,19 +567,19 @@ PeerConnection.addIceCandidate(candidate);
 \end{lstlisting}
 
 
-Uno de los puntos mas importantes para el proyecto que se tiene que encargar \emph{RTCPeerConnection} es transferir el flujo visual desde el par local al par remoto. WebRTC nos lo permite de una forma muy sencilla. En el par local, con un método al que le añadimos como argumento el flujo que hemos obtenido llamar a la API \emph{getUserMedia}:\\
+Uno de los puntos mas importantes para el proyecto que se tiene que encargar \emph{RTCPeerConnection} es transferir el flujo visual desde el par local al par remoto. WebRTC nos lo permite de una forma muy sencilla. En el par local, con un método al que le añadimos como argumento el flujo que hemos obtenido al llamar a la API \emph{getUserMedia}:\\
 
 \begin{lstlisting}[caption=Manejandor del flujo audiovisual en el par local.]
 PeerConnection.addStream(localStream); 
 \end{lstlisting}
 
-Y en el par remoto con un método manejador llamado \emph{onaddstream}, que en el momento de saltar un evento llama a la función \emph{handleRemoteStreamAdded}, y esta se encarga de configurar el flujo en una etiqueta vídeo de HTML5.\\
+Y en el par remoto con un método manejador llamado \emph{onaddstream}, que en el momento en el que salta el evento llama a la función \emph{handleRemoteStreamAdded}, y esta se encarga de configurar el flujo en una etiqueta vídeo de HTML5.\\
 
 \begin{lstlisting}[caption=Manejandor del flujo audiovisual en el par remoto.]
 
 // Funcion manejadora
 function handleRemoteStreamAdded(event) {
-	window.remoteVideo = remoteVideo; // make avalaible on console for inspection
+
     var remoteVideo = document.getElementById("droneVideo"); // 
 
 	if (window.URL){
@@ -599,12 +599,162 @@ Una vez creada y establecida la conexión \emph{RTCPeerConnection} la usaremos p
 
 
 \subsection{RTCDataChannel}
-\subsubsection{Sensores de navegación}
-\subsubsection{Órdenes}
-\subsubsection{Localización espacial del drone}
 
+\emph{RTCDataChannel} nos permite transferir cualquier tipo de dato u objeto entre los pares a través de la comunicación creada por \emph{RTCPeerConnection}. Hemos usado esta API para transferir tanto los datos obtenidos de los sensores del drone como las órdenes de movimiento dadas.\\
+
+Para crear esta conexión basta con llamar al método \emph{createDataChannel()} de \emph{RTCPeerConnection} en el par local ya que es quien ha establecido la conexión. Este método admite dos argumentos, el primero es el nombre que le damos a esta conexión y el segundo es un objeto en el que se especifica la configuración de las propiedades disponibles. La única propiedad que se ha configurado distinta de las que viene por defecto es la entrega ordenada de paquetes, estableciendolo en falso, ya que de esta manera introduce menos retraso a la comunicación, eliminando cuellos de botella ya que el medio en el que se transfieren los paquetes no es ruidoso ni tiene condiciones extremas para que se produzcan demasiadas pérdidas de paquetes.\\
+
+\begin{lstlisting}[caption=Establecimiento conexión RTCDataChannlel en el par local.]
+// Creacion de la comunicacion dataChannel
+dataChannel = PeerConnection.createDataChannel("droneDataChannel", {ordered: false});
+
+// Metodo de error para la creacion del dataChannel
+dataChannel.onerror = function (error) {
+  console.log("Data Channel Error:", error);
+};\end{lstlisting}
+
+Si al crear la conexión ocurre un error salta un evento en el método \emph{onerror} que nos comunica a través de la terminal el error que se ha producido.\\
+
+Para el control de la comunicación RTCDataChannel utiliza tres métodos para gestionar la conexión. Por un lado los métodos de inicio y final de la conexión, y el método que maneja los mensajes recibidos.\\
+
+\begin{lstlisting}[caption=Manejadores de RTCdataChannlel.]
+function handleReceiveChannelStateChange() {
+  var readyState = dataChannel.readyState;
+  if (readyState == closed) {
+    isChannelRunning = false;
+    clearInterval(intervalo); //Paramos el intervalo de actulizacion con el drone si el canal se cierra
+  }
+}
+
+dataChannel.onopen = handleReceiveChannelStateChange;
+dataChannel.onclose = handleReceiveChannelStateChange;
+dataChannel.onmessage = handleMessage;
+};\end{lstlisting}
+
+La función \emph{handleMessage} es la encargada de manejar los mensajes recibidos, pero hablaremos más en profundidad de ella en la sección \ref{subsec:ordenes}\\
+
+En el par remoto para establecer la conexión RTCDataChannel hemos configurado el método \emph{ondatachannel}. Este método se encarga de unirse a la comunicación creada por el par local con las mismas propiedades y configuraciones que se le han indicado. Cuando se activa este método llama a una función que maneja la conexión. Esta función se encarga de configurar la conexión en la variable local, y de establecer en los métodos de apertura y cierre de la comunicación las funciones manejadoras. Las función manejadora \emph{handleSendChannelStateChange} es la misma que la mostrada en el listing \ref{lst:manejadoresdatachannel}.\\
+
+\begin{lstlisting}[caption={Establecimiento de RTCDataChannlel en el par remoto.}, label={lst:manejadoresdatachannel}]
+function gotReceiveChannel(event) {
+	dataChannel = event.channel; // Establece el datachannel
+	dataChannel.onopen = handleSendChannelStateChange;
+	dataChannel.onclose = handleSendChannelStateChange;
+	dataChannel.onmessage = handleMessage;
+}
+
+// Evento manejador al recibir apertura comunicacion datachannel del par local.
+PeerConnection.ondatachannel = gotReceiveChannel;
+};\end{lstlisting}
+
+Una vez establecida la comunicacion de datos RTCDataChannel podemos enviar los datos que necesitemos con el método \emph{dataChannel.send()} y recibirlos con el método manejador \emph{onmessage}. A continuación vamos a ver cómo hemos utilizado estos métodos para enviar y recibir los sensores del drone y las órdenes de movimiento.\\
+
+
+\subsubsection{Sensores de navegación}
+
+Los datos de los sensores los recogemos en el par local. Llamamos a una función del método ArDrone, explicado en la sección \ref{subsec:ardrone}, que a su vez llama a las funciones que se conectan directamente con las interfaces para recoger los datos. Esta llamada la hacemos de manera periódica con una función \emph{setinterval()} de JavaScript.\\
+
+\begin{lstlisting}[caption=Intervalo actualización y envío de datos de los sensores.]
+intervalo = setInterval(arDrone.updateAndSend, 15);
+\end{lstlisting}
+
+Después de actualizar los datos, esta función a su vez llama a la función \emph{sendNavigationData(pose, navdata)} que es la encargada de enviar estos datos a través de la conexión \emph{RTCDataChannel}. Esta función admite dos argumentos, el primero es el objeto \emph{pose}, que contiene los datos recogidos de la interfaz \emph{Pose3D}, y el segundo el objeto \emph{Navdata}, con los datos de navegación recogidos de la variable \emph{Navdata}.\\
+
+\begin{lstlisting}[caption=Envio de los datos de los sensores en el par local.]
+function sendNavigationData(pose, navdata) {
+	var s = {pose:pose, navdata:navdata};
+	dataChannel.send(JSON.stringify(s));
+	//console.log("Send navigationData.");
+}
+};\end{lstlisting}
+
+Para enviar los datos primero creamos un objeto JavaScript, en el que introducimos los objetos Pose y Navdata. Este objeto lo transformamos a un objeto JSON\footnote{http://www.json.org} para enviarlo por el canal de datos RTCDataChannel.\\
+
+Los datos llegan al par remoto en forma de evento al par remoto a la función \emph{handleMessage()}.\\
+
+\begin{lstlisting}[caption=Manejo de los datos de los sensores en el par remoto.]
+function handleMessage(event) {
+    var data = JSON.parse(event.data);
+    pose = data.pose;
+    navdata = data.navdata;
+}
+\end{lstlisting}
+
+Esta función se encarga de reconvertir el objeto JSON recibido a objeto JavaScript, y posteriormente guardamos los objetos pose y navdata para su posterior representación en pantalla. Estos datos los visualizaremos en unos relojes de navegación, los cuáles estudiaremos con más detalle en la sección \ref{subsec:relojesnavegacion}.\\
+
+
+\subsubsection{Órdenes}\label{subsec:ordenes}
+
+El par remoto es el encargado de transferir las órdenes dadas por el usuario al par local, y este a su vez al drone. El usuario tiene distintas maneras de introducir o hacer saber al equipo las órdenes que quiere dar. La primera es con unos \emph{joysticks} multidispositivo e las esquinas inferiores de la pantalla, y la segunda mediante un mando conectado por USB al ordenador.\\
+
+En la sección \ref{subsec:joysticks} se analizará en profundidad ambos, mientras que en esta sección nos centraremos en el intercambio de los datos.\\
+
+La forma en la que hemos diseñado la interfaz hace que tengamos dos joysticks, uno de ellos controla la dirección y velocidad del drone, y el otro controla la altitud y el giro del drone. A parte de esto tenemos otro rtipo de órdenes, estas son las llamadas especiales, que son la orden de despegue y la orden de aterrizaje. Por este motivo hemos creado tres tipos de funciones de envio:\\
+
+\begin{lstlisting}[caption=Funciones de envío de órdenes en el par remoto.]
+function enviarOrden(d){
+    //console.log(d);
+    var data = {orden:d};
+    dataChannel.send(JSON.stringify(data));
+}
+
+function sendCMDVel(x, y){
+    var data = {x:x,y:y};
+    //console.log(data);
+    dataChannel.send(JSON.stringify(data));
+}
+
+function sendAltYaw(alt, yaw){
+    //console.log(d);
+    var data = {alt:alt, yaw:yaw};
+    dataChannel.send(JSON.stringify(data));
+}
+\end{lstlisting}
+
+La función \emph{enviarOrden()} es llamada al pulsar el botón de despegue o aterrizaje que implementaremos en la inteerfaz de usuario. Creamos un objeto JavaScript con la orden, y le reconvertimos a un objeto JSON y se envía a través del canal RTCDataChannel con \emph{dataChannel.send(JSON.stringify(data));}.\\
+
+
+\emph{sendCMDVel()} es llamada cuándo el usuario interactua con el \emph{joystick} situado en la parte inferior izquierda de la pantalla. Esta función admite como argumento el valor de las componentes espaciales \emph{x} e \emph{y}. Creamos un objeto JavaScript y lo enviamos de la misma forma que el resto de datos que enviamos a través del canal RTCDataChannel.\\
+
+Con el segundo \emph{joystick} situado en la esquina inferior derecha controlamos la altitud y el giro del drone. La función \emph{sendAltYaw()}. Esta función también admite dos argumentos, la altura (o componente espacial \emph{z}) y el giro del drone. Enviamos de la misma manera, creando una variable JavaScript con ellas, reconvertimos a objeto JSON y enviamos.\\
+
+Todos estos datos los recibimos en la función \emph{handleMessage()} del par local. En esta función reconvertimos el objeto JSON a objeto JsvaScriot y llamamos a una función manejadora a la que le enviamos como argumento el objeto JavaScript.\\
+
+\begin{lstlisting}[caption=Manejo de las órdenes recibidas en el par local.]
+// Manejador de datos recibidos 
+function handleReceiveData(data) {
+  if ("orden" in data) {
+    if (data.orden == "takeoff") {
+      arDrone.takeoff();
+    } else if (data.orden == "land") {
+      arDrone.land();
+    } else {
+      console.log("Orden no valida. ");
+    }
+  } else if ("x" in data) {
+    arDrone.setXYValues(data.x, data.y);
+  } else if ("alt" in data) {
+    arDrone.setAltYaw(data.alt, data.yaw);
+  } else {
+    console.log("Dato invalido. ");
+  }		
+}
+
+// Recibimos los paquetes del datachannel y los enviamos al manejador de datos
+function handleMessage(event) {
+  //console.log('Received message: ' + event.data);
+  var data = JSON.parse(event.data);
+  handleReceiveData(data);
+}
+\end{lstlisting}
+
+
+La función manejadora \emph{handleReceiveData()} se encarga de discernir que tipo de dato ha llegado y llamar a la función correspondiente del módulo ArDrone.\\
+
+En este punto tenemos toda la comunicación de datos terminada, por lo que procedemos a explicar el desarrollo de la interfaz web de usuario.\\
 
 \section{Interfaz web de usuario}
 \subsection{Visualización de las imágenes}
-\subsection{Joysticks}
-\subsection{Relojes de navegación}
+\subsection{Joysticks y Gamepad}\label{subsec:joysticks}
+\subsection{Relojes de navegación}\label{subsec:relojesnavegacion}
+\subsection{Localización espacial del drone}
