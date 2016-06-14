@@ -1,8 +1,8 @@
-\chapter{Solución}
+\chapter{Desarrollo software}
 
 Una vez nos hemos situado en el contexto en el que se ubica este proyecto, y hemos expuesto los requisitos a cumplir y las herramientas necesarias para llegar a las metas planteadas, nos adentramos a explicar en este capitulo las soluciones utilizadas para llegar a buen puerto.\\
 
-\section{Estructura general}
+\section{Diseño}
 
 De manera general en cuanto a la estructura general el par local deberá establecer la conexión con el drone, acceder a sus sensores y a su cámara. Deberá también establecer una conexión con el ordenador remoto y enviarle todos estos datos obtenidos del drone. Del par remoto recibirá las ordenes y comandos de movimiento, que deberá enviárselos al drone.\\
 
@@ -33,7 +33,7 @@ Como se puede observar el par local es el que lleva la batuta de la conexión. E
 
 Cuando el par remoto accede a servidor de señalización, este le envía un mensaje al par local indicando que un par remoto se ha conectado. En este momento el par local inicia la creación de la conexión \emph{RTCPeerConection} de WebRTC. Primero se produce el intercambio de paquetes SDP a través del servidor de señalización, y posteriormente el de ICE. Una vez finalizados ambos ya tenemos establecida la conexión WebRTC entre ambos pares.\\
 
-\section{Conexión local}
+\section{Conexión local drone navegador}
 
 Esta primera parte la hemos solucionado dividiendo el problema en dos subproblemas. Por un lado la conexión con el servidor encargado de conectarse al cuadricóptero, \emph{ardone\_server}, y por otro obtener un flujo de vídeo para poder visualizarlo en la parte remota. Este problema lo hemos solucionado incorporando una cámara a bordo del drone que ira conectada al par local y a la cual accederemos desde el navegador con la API getUserMedia que nos brinda WebRTC.\\
 
@@ -432,7 +432,7 @@ io.sockets.on('connection', function (socket){
 
 Una vez tenemos el servidor operativo vamos a explicar como hemos creado la conexión entre pares y como hemos usado esta conexion para transmitir el vídeo de la cámara del drone hasta el par remoto.\\
 
-\subsection{RTCPeerConnection: Transmisión de la cámara a bordo}
+\subsection{RTCPeerConnection: Transmisión de vídeo}
 
 La conexión entre pares se crea en el momento en el que el par local recibe del servidor de señalización un mensaje indicando que el par remoto se ha conectado y esta preparado para establecer la conexión. En ese momento se ejecuta una función que configura los parámetros necesarios y  crea la comunicación.\\
 
