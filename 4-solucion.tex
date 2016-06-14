@@ -754,7 +754,69 @@ La función manejadora \emph{handleReceiveData()} se encarga de discernir que ti
 En este punto tenemos toda la comunicación de datos terminada, por lo que procedemos a explicar el desarrollo de la interfaz web de usuario.\\
 
 \section{Interfaz web de usuario}
-\subsection{Visualización de las imágenes}
+
+El diseño de la interfaz lo hemos solucionado...
+
+\subsection{Visualización del vídeo}
+
+Para teleoperar el drone de una manera efectiva necesitamos poder visualizar el vídeo que recibimos de la cámara de la mejor manera posible. Hemos optado por visualizarlo a pantalla completa en el navegador, por debajo del resto de elementos que tendremos en la pantalla.\\
+
+Para situar el vídeo a pantalla completa primero necesitamos definir en la hoja de estilos o \emph{CSS} el cuerpo de la página con margen cero, y posteriormente situar el vídeo en el centro de la pantalla y con tamaño 100\%. Para el tiempo que transcurre entre que se inicia el período de señalización hasta que recibimos el vídeo se establece una imágen de fondo\\
+
+\begin{lstlisting}[caption=Vídeo a pantalla completa.]
+body{
+       background: url(background.jpg) no-repeat;
+       background-size: 100% 100%;
+}
+
+video#droneVideo { 
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       min-width: 100%;
+       min-height: 100%;
+       width: auto;
+       height: auto;
+       z-index: -100;
+       -webkit-transform: translateX(-50%) translateY(-50%);
+       transform: translateX(-50%) translateY(-50%);
+       background: url(background.jpg) no-repeat;
+       background-size: cover; 
+}
+\end{lstlisting}
+
 \subsection{Joysticks y Gamepad}\label{subsec:joysticks}
+
+Para que el usuario controle el drone hemos optado por desarrollar dos opciones. La primera opción es a través de unos \emph{joysticks} situados en la pantalla, los cuáles son multidispositivos, ya que se pueden usar en un ordenador con el puntero del ratón y en dispositivos táctiles con los dedos. Por otro lado, también puede ser controlado con un mando USB conectado en el ordenador.
+
+\subsubsection{Joysticks}
+
+Los joystick son un canvas de HTML5 en el que dibujamos un círculo y un aro exterior. 
+
+\begin{lstlisting}[caption=Aro y círculo del joystick.]
+function dibujarAro(x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+        //ctx.lineWidth = 7;
+        ctx.strokeStyle = "rgb(87,125,25)";
+        ctx.stroke();
+}
+
+function dibujarCirculo(x, y, r) {
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(75, 144, 176)";
+        ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+        ctx.fill();
+}
+\end{lstlisting}
+
+
 \subsection{Relojes de navegación}\label{subsec:relojesnavegacion}
 \subsection{Localización espacial del drone}
+
+
+
+
+
+
+
