@@ -787,17 +787,17 @@ video#droneVideo {
 
 \subsection{Joysticks y Gamepad}\label{subsec:joysticks}
 
-Para que el usuario controle el drone hemos optado por desarrollar dos opciones. La primera opción es a través de unos \emph{joysticks} situados en la pantalla, los cuáles son multidispositivos, ya que se pueden usar en un ordenador con el puntero del ratón y en dispositivos táctiles con los dedos. Por otro lado, también puede ser controlado con un mando USB conectado en el ordenador.
+Para que el usuario controle el drone hemos optado por desarrollar dos opciones. La primera opción es a través de unos \emph{joysticks} situados en la pantalla, los cuáles son multidispositivo, ya que se pueden usar en un ordenador con el puntero del ratón y en dispositivos táctiles con los dedos. Por otro lado, también puede ser controlado con un mando USB conectado en el ordenador.\\
 
 \subsubsection{Joysticks}
 
-Los joystick son un canvas de HTML5 en el que dibujamos un círculo y un aro exterior. 
+Los joystick han sido desarrollados como un canvas de HTML5 en el que dibujamos un círculo y un aro exterior.\\
 
 \begin{lstlisting}[caption=Aro y círculo del joystick.]
 function dibujarAro(x, y, r) {
         ctx.beginPath();
         ctx.arc(x, y, r, 0, 2 * Math.PI, true);
-        //ctx.lineWidth = 7;
+        ctx.lineWidth = 7;
         ctx.strokeStyle = "rgb(87,125,25)";
         ctx.stroke();
 }
@@ -811,8 +811,211 @@ function dibujarCirculo(x, y, r) {
 \end{lstlisting}
 
 
+El aro exterior es un elemento fijo, es decir no se mueve y lo utilizamos como "tope" para el círculo interior, que sí es móvil. El círculo es móvil según los movimientos del usuario.\\
+
+Para dotar a éste círculo de movimiento hemos utilizado los eventos de JavaScript \emph{mousedown}, \emph{mousemove}, \emph{mouseup} y \emph{mouseout}. El primer evento se ejecuta cuándo el usuario hace \emph{click} con el ratón. Dentro de este evento nos encargamos de detectar si ha sido en el círculo que hemos dibujado. El segundo evento ocurre cuándo, sin soltar el ratón, el usuario lo mueve. Si en el primer evento hemos detectado que ha \emph{clickado} sobre el círculo, se re-dibuja el por la zona dónde está moviendo el ratón. Con el evento \emph{mouseup}, al deshacer el click, re-dibujamos el círculo a su posición inicial. El evento \emph{mouseout} detecta si el ratón se ha salido del aro y también devuelve el \emph{joystick} a su posición inicial.\\
+
+\begin{lstlisting}[caption=Movimiento y control del joystick.]
+canvas.addEventListener('mousedown', function(evt) {
+        var mousePos = oMousePos(canvas, evt);
+
+        if (ctx.isPointInPath(mousePos.x, mousePos.y)) {
+                arrastrar = true;
+       }
+}, false);
+
+// mousemove 
+canvas.addEventListener('mousemove', function(evt) {
+        var m = oMousePos(canvas, evt);
+        //ctx.beginPath();
+        //ctx.arc(X, Y, maxR, 0, 2 * Math.PI);
+        if (arrastrar) {
+                delta.x = m.x - p.X;
+                delta.y = m.y - p.Y;
+                var deltaR = Math.sqrt(delta.x * delta.x + delta.y * delta.y);
+                var elR = Math.min(deltaR, maxR);
+                //console.log("DeltaR: " + deltaR + " elR: " + elR);
+                var angulo = Math.atan2(delta.y, delta.x);
+                //console.log(angulo); //
+                
+                x = X + elR * Math.cos(angulo);
+                y = Y + elR * Math.sin(angulo);
+                
+                ctx.clearRect(0, 0, cw, ch); // Clear and redraw the joystick
+                dibujarAro(X, Y, RHoop);
+                dibujarCirculo(x, y, RCircle);
+        }
+}, false);
+
+// mouseup 
+canvas.addEventListener('mouseup', function() {
+        
+        sendAltYaw(0, 0);
+        
+        arrastrar = false;
+        ctx.clearRect(0, 0, cw, ch);
+        dibujarAro(X, Y, RHoop);
+        dibujarCirculo(X, Y, RCircle);
+}, false);
+
+// mouseout 
+canvas.addEventListener('mouseout', function() {
+        sendAltYaw(0, 0);
+        
+        arrastrar = false;
+        ctx.clearRect(0, 0, cw, ch);
+        dibujarAro(X, Y, RHoop);
+        dibujarCirculo(X, Y, RCircle);
+}, false);
+\end{lstlisting}
+
+Dentro del evento \emph{mousemove} también recogemos la posición en la que se encuentra el \emph{joystick} y llamamos a la función correspondiente que se ocupa de enviar los datos a través del canal RTCDataChannel. En el \emph{joystick} izquierdo se llama a la función \emph{sendCMDVel()} y en el de la derecha \emph{sendAltYaw()}.\\
+
+Para dotar a los joysticks de funcionalidades táctiles hemos desarrollado las mismas funciones que las anteriores con los eventos táctiles equivalentes: \emph{touchstart}, \emph{touchmove}, \emph{touchend}, \emph{touchup}.\\
+
+La figura \ref{fig:joysticks} muestra los dos joysticks antes de ser situados en su posición en la pantalla.\\
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{joysticks}
+\caption{Joysticks.}
+\label{fig:joysticks}
+\end{figure}
+
+
+\subsubsection{Gamepad}
+
+También se ha desarrollado la posibilidad de teleoperar el drone mediante un mando USB conectado al ordenador. La API \emph{Gamepad} de JavaScript no esta estabilizada, hay navegadores que no la soportan y no todos los mandos funcionan de la misma manera. El mando con el que se ha desarrollado es el \emph{Xbox} de la empresa \emph{Microsoft}, no se han realizado pruebas con mandos de otros fabricantes por lo que no se puede asegurar su correcto funcionamiento. \\
+
+Para la detección del mando al ser conectado al puerto USB hemos usado los eventos que nos da la API \emph{Gamepad}. Al conectar el mando se ejecuta el evento \emph{gamepadconnected} que llama a la función manejadora \emph{connecthandler}.\\
+
+\begin{lstlisting}[caption=Detección del mando.]
+function connecthandler() {
+    var gp = navigator.getGamepads()[0];
+    console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", gp.index, gp.id, gp.buttons.length, gp.axes.length);
+    updateGPInterval = setInterval(updateGamePad, 100);
+    $(".joystick").fadeOut(4000);
+}
+
+window.addEventListener("gamepadconnected", connecthandler);
+window.addEventListener("gamepaddisconnected", disconnecthandler);
+\end{lstlisting}
+
+La función \emph{connecthandler()} guarda en una variable el mando conectado y crea un intervalo que llama periódicamente a la función que detectará los movimientos de los botones. Por otro lado se encarga de ocultar los \emph{joysticks}, los cuales volveremos a mostrar si se desconecta el mando.\\
+
+Dentro de la función \emph{updateGamePad()} detectamos el movimiento de los dos joysticks del mando. y la pulsación de los botones. Hemos configurado la pulsación de una tecla para el despegue y otra para el aterrizaje, y con los \emph{joyticks} controlamos el vuelo de igual manera que con los \emph{joysticks} virtuales.
+
+\begin{lstlisting}[caption=Manajador de mando.]
+
+function updateGamePad() {
+    var gp = navigator.getGamepads()[0];
+    if (!gp && isChrome) {
+        disconnecthandler();
+        chromeInterval = setInterval(scangamepad, 1000);        
+    } else {
+        if (gp.buttons[0].pressed) {
+            enviarOrden("takeoff");
+        } else if (gp.buttons[1].pressed) {
+            enviarOrden("land");
+        }
+        
+        if (!isChrome) {
+            var Y = applyDeadzone(gp.axes[0], 0.12);
+            var X = applyDeadzone(gp.axes[1], 0.12);
+            var Yaw = applyDeadzone(gp.axes[3], 0.12);
+            var Alt = applyDeadzone(gp.axes[4], 0.12);
+        } else{
+            var Y = applyDeadzone(gp.axes[0], 0.12);
+            var X = applyDeadzone(gp.axes[1], 0.12);
+            var Yaw = applyDeadzone(gp.axes[2], 0.12);
+            var Alt = applyDeadzone(gp.axes[3], 0.12);
+         }
+         sendCMDVel(-X*velocidad,Y*velocidad);// Change variables and send the command to the drone
+         sendAltYaw(-Alt*velocidad, Yaw*velocidad);
+    }
+}
+\end{lstlisting}
+
+En eta funcion tambien recogemos los valores y llamamos a las funciones encargadas de enviar los datos a traves del canal \emph{RTCDataChannel}.\\
+
+
 \subsection{Relojes de navegación}\label{subsec:relojesnavegacion}
+
+Para representar los datos recibidos de los sensores del drone como la altitud, velocidad, brujula, etc nos hemos ayudado de un plugin\footnote{http://sebmatton.github.io/flightindicators/}\cite{jqueryflightindicator} jQuery desarrollado por Matton Sébastien\footnote{https://github.com/sebmatton}.\\
+
+Hemos usado cuatro relojes distintos: 
+
+\begin{itemize}
+\item Uno que nos indique la altitud del drone.
+\item El segundo nos representa el horizonte.
+\item El tercero es una brújula.
+\item El cuarto indica la inclinación del drone.
+\end{itemize}
+
+Para crear estos relojes, creamos una etiqueta \texttt{<span>} para cada uno en HTML5, y posteriormete con jQuery llamamos a las siguientes funciones:\\
+
+\begin{lstlisting}[caption=Creación de los relojes.]
+var attitude = $.flightIndicator('#attitude', 'attitude', {roll:50, pitch:-20, size:s, showBox : false}); // Horizon
+var heading = $.flightIndicator('#heading', 'heading', {heading:150, showBox:false, size:s}); // Compass
+var altimeter = $.flightIndicator('#altimeter', 'altimeter', { showBox:false, size:s});
+var turn_coordinator = $.flightIndicator('#turn_coordinator', 'turn_coordinator', {turn:0,  showBox:false, size:s}); 
+\end{lstlisting}
+
+Para actualizar los datos de estos relojes con los que llegan al par remoto directamente desde el drone se ha desarrollado una función a la que llamamos periódicamente con las variables \emph{pose} y \emph{navdata} como argumentos:\\
+
+\begin{lstlisting}[caption=Actualización de los relojes.]
+this.updatePanelControl =  function(navdata, pose){
+    // calculate yaw, pitch, and roll
+    var yaw = getYaw(pose.q0, pose.q1, pose.q2, pose.q3);
+    var pitch = getPitch(pose.q0, pose.q1, pose.q2, pose.q3);
+    var roll = getRoll(pose.q0, pose.q1, pose.q2, pose.q3);
+    
+    attitude.setRoll(roll);
+    attitude.setPitch(-pitch);
+
+    // Altimeter update
+    altimeter.setAltitude(pose.z*100);
+    //altimeter.setPressure(1000+3*Math.sin(increment/50));
+
+    // TC update
+    turn_coordinator.setTurn(roll);
+
+    // Heading update
+    heading.setHeading(yaw);
+    
+    // Cambiamos el ancho en el estilo del relleno de la bateria segun el nivel de bateria que nos manda el drone
+    battery.style.width = String(navdata.batteryPercent) + "%";
+    window.navdata = navdata;
+    console.log(navdata.state);
+}
+\end{lstlisting}
+
+La situación en la pantalla de estos relojes es de gran importancia. Para no ocultar la visión de la cámara y tenerlos visibles se ha decido colocarlos por pares en las esquinas superiores de la pantalla. Además, se les ha dotado de la propiedad de jQuery \emph{draggable}, la cuál nos permite arrastrarlos por la pantalla y situarlos dónde mas como le sea al usuario.\\
+
+\begin{lstlisting}[caption=Elementos arrastrables.]
+
+$(function() {
+    $( "#attitude").draggable();
+    $( "#altimeter").draggable();
+    $( "#turn_coordinator").draggable();
+    $( "#heading").draggable();
+});
+\end{lstlisting}
+
+En la figura \ref{fig:relojesnavegacion} podemos observar los cuatro relojes incorporados a la interfaz web de usuario.\\
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{relojesnavegacion}
+\caption{Relojes de navegación.}
+\label{fig:relojesnavegacion}
+\end{figure}
+
 \subsection{Localización espacial del drone}
+
+Para días de niebla o condiciones extremas es imprescindible tener localizado en drone para poder traerlo de vuelta. Utilizando los datos del GPS del drone hemos creado un mapa 3D con la situación del drone en tiempo real. Para desarrollar este mapa nos hemos ayudado de la librería \emph{Three.js}\footnote{http://threejs.org} la cuál nos facilita el acceso y uso de WebGL.\\
+
+El mapa es dibujado sobre una etiqueta \texttt{<canvas>}, y está compuesto principalmente por una escena, una cámara en esa escena, el suelo y el drone.\\
 
 
 
