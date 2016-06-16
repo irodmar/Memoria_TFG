@@ -15,7 +15,7 @@ El par remoto deberá establecer la conexión con el par local. De este recibir�
 \label{fig:esquemageneral}
 \end{figure}
 
-Como primer problema se presentó decidir cuál de los dos ordenadores que necesitamos para la conexión WebRTC seria el que realizaría la llamada y en que momento del flujo. Este no es un problema trivial, ya que la selección de uno u otro haría que el desarrollo de la aplicación fuese completamente distinto.\\
+Como primer problema se presentó decidir cuál de los dos ordenadores que necesitamos para la conexión WebRTC sería el que realizaría la llamada y en que momento del flujo. Este no es un problema trivial, ya que la selección de uno u otro haría que el desarrollo de la aplicación fuese completamente distinto.\\
 
 Se optó por que el par que llevase la batuta de la conexión fuese el ordenador local, ya que este a su vez también es el encargado de  establecer la conexión con el drone. De esta manera tenemos un par que es el que actuará de maestro, estableciendo ambas conexiones en los momentos oportunos.\\
 
@@ -33,7 +33,7 @@ Como se puede observar el par local es el que lleva la batuta de la conexión. E
 
 Cuando el par remoto accede a servidor de señalización, este le envía un mensaje al par local indicando que un par remoto se ha conectado. En este momento el par local inicia la creación de la conexión \emph{RTCPeerConection} de WebRTC. Primero se produce el intercambio de paquetes SDP a través del servidor de señalización, y posteriormente el de ICE. Una vez finalizados ambos ya tenemos establecida la conexión WebRTC entre ambos pares.\\
 
-\section{Conexión local drone navegador}
+\section{Conexión local drone-navegador}
 
 Esta primera parte la hemos solucionado dividiendo el problema en dos subproblemas. Por un lado la conexión con el servidor encargado de conectarse al cuadricóptero, \emph{ardone\_server}, y por otro obtener un flujo de vídeo para poder visualizarlo en la parte remota. Este problema lo hemos solucionado incorporando una cámara a bordo del drone que ira conectada al par local y a la cual accederemos desde el navegador con la API getUserMedia que nos brinda WebRTC.\\
 
@@ -44,13 +44,13 @@ Se explica a continuación la conexión con el servidor y posteriormente el acce
 
 Para establecer la conexión con el drone se ha utilizado el componente \texttt{ardrone\_server} de JdeRobot. Este componente tiene dos versiones, la componente simulada que es la que hemos instalado en forma de plugin en el simulador Gazebo y la componente real, que se conecta al drone real. Ambas componentes nos ofrecen las mismas interfaces de conexión, por lo que una única configuración de nuestra aplicación bastará para poder trabajar con la versión simulada y la real.\\
 
-En este punto podemos dividir el proyecto en dos partes. Servidor y Cliente. La parte de servidor trataremos básicamente la configuración, y la parte del cliente será la que se desarrolla desde cero.\\
+Esta conexión se ha divido en dos partes, servidor y cliente. En la parte de servidor se ha tratado su configuración y la activación de los plugins necesarios, y la parte del cliente se ha desarrollado desde cero el código necesario para establecer y controlar la conexión.\\
 
 \subsubsection{Servidor}
 
 Los componentes JdeRobot utilizan, como ya hemos visto, interfaces ICE para el intercambio de información del que se ocupan. Los navegadores no tienen capacidad de usar el \emph{middleware} ICE directamente. Para poder conectarnos con estas interfaces ICE hemos tenido que instalar el plugin ICE for JavaScript, o ICE\-JS. Este plugin nos habilita la opción de conectarnos a estas interfaces directamente desde el navegador usando \emph{websockets}.\\
 
-Aunque estaba disponible la versión 3.6 de ICE\footnote{https://doc.zeroc.com/display/Ice36/Home} la cuál trae en la suite instalado de serie ICE\_JS, hemos usado la versión 3.5, ya que es la versión compatible con la versión más actual de JdeRobot\footnote{http://jderobot.org/Manual-5}. En esta versión ICE\_JS es un plugin a parte el cuál hay que instalarlo descargando el código fuente desde la página de Zeroc\footnote{https://zeroc.com} y compilarlo.\\
+Aunque estaba disponible la versión 3.6 de ICE\footnote{https://doc.zeroc.com/display/Ice36/Home} la cuál trae en la \emph{suite} instalado de serie ICE\_JS, hemos usado la versión 3.5, ya que es la versión compatible con la versión más actual de JdeRobot\footnote{http://jderobot.org/Manual-5}. En esta versión ICE\_JS es un plugin a parte el cuál hay que instalarlo descargando el código fuente desde la página de Zeroc\footnote{https://zeroc.com} y compilarlo.\\
 
 Una vez instalado hay que activar este plugin en el servidor. Para ello hay que añadir la siguiente línea en el archivo de configuración del servidor:\\
 
@@ -67,18 +67,18 @@ Posteriormente a esto, en el mismo archivo hay que indicarle las direcciones IP 
 \end{lstlisting}
 
 
-El servidor tiene hasta un máximo de seis interfaces diferentes a las que te puedes conectar. Cada uno de estas interfaces nos ofrece un servicio diferente. Para nuestro proyecto hemos usado cuatro de esas interfaces.
+El servidor tiene hasta un máximo de seis interfaces diferentes a las que te puedes conectar. Cada uno de estas interfaces nos ofrece un servicio diferente. Para nuestro proyecto hemos usado cuatro de esas interfaces:\\
 
 \begin{itemize}
 \item \textbf{Pose3D:} Con esta interfaz accedemos a los datos \emph{pose} del cuadricóptero (x, y, z, h y \emph{quaternion}).
 \item \textbf{Navdata:} Esta interfaz nos proporciona los datos de navegación procedentes de los sensores, como la velocidad de las componentes (x, y, z) del drone, altitud, la velocidad del viento, el nivel de batería, etc.
-\item \textbf{CMDVel:} Esta interfaz es la que se encarga de recibir las órdenes de movimiento.
+\item \textbf{CMDVel:} Esta interfaz es la encargada de recibir las órdenes de movimiento.
 \item \textbf{BaseExtra:} Esta interfaz nos da funcionalidades extra como el aterrizaje o el despegue del cuadricóptero.
 \end{itemize}
 
 Así pues, esta es la forma final que tiene nuestro archivo de configuración:\\
 
-\begin{lstlisting}[caption=Archivo de configuración]
+\begin{lstlisting}[caption=Archivo de configuración de ArDrone\_Server.]
 # Ice-JS
 Ice.Plugin.IceWS=IceWS:createIceWS
 
@@ -113,9 +113,9 @@ A parte de los \emph{endpoints} es también importante configurar correctamente 
 
 Una vez configurado el servidor hemos creado el método ArDrone.js, el cuál es el encargado de conectarse y manejar la conexión con el servidor \texttt{ardrone\_server}.\\
 
-Para establecer una comunicación ICE lo primero es crear las variables ICE necesarias. Estas las creamos de la siguiente manera:\\
+Para establecer una comunicación ICE lo primero que se ha creado han sido las variables ICE necesarias. Estas han sido creadas de la siguiente manera:\\
 
-\begin{lstlisting}[caption=Formato \emph{endpoints} de los \emph{WebSocket} de ICEJS]
+\begin{lstlisting}[caption=Variables para la conexión ICE.]
 // Variable ICE para la conexion
 var id = new Ice.InitializationData();
 id.properties = Ice.createProperties();
@@ -126,7 +126,7 @@ var communicator = Ice.initialize(id);
 
 Por si fallase la comunicación ICE se le ha añadido a la variable \emph{id} una propiedad con la que podemos seguir la ruta de la comunicación y detectar en que punto se produce el fallo.\\
 
-Posteriormente es necesario crear una variable, que será la que actuará como \emph{proxy}, por cada interfaz a la que necesitemos conectarnos. Esta es la nomenclatura que debe seguir:\\
+Posteriormente es necesario crear una variable, que será la que actuará como \emph{proxy}. Es necesario crear una variable por cada interfaz a la que necesitemos conectarnos. Esta es la nomenclatura que sigue:\\
 
 \begin{lstlisting}[caption=Nomenclatura de variable que actuará como \emph{proxy}]
 var proxy = communicator.stringToProxy("nombre_interfaz:ws -h " + ip + " -p " + "puerto");
@@ -135,7 +135,7 @@ var proxy = communicator.stringToProxy("nombre_interfaz:ws -h " + ip + " -p " + 
 Nótese en la nomenclatura donde pone \emph{nombre\_interfaz} se corresponde con el nombre que le hemos asignado al \emph{endpoint} en el archivo de configuración del servidor. Asimismo el puerto también se corresponde con el configurado.\\
 
 
-La comunicación con las interfaces se realiza mediante el objeto promesa o \emph{promise}. Este objeto se usa para las comunicaciones asíncronas y se caracteriza por tener tres estados: pendiente, cumplida o rechazada. Cuando una promesa ha sido llamada puede presentar el estado cumplida o rechazada, lo que nos permite llamar al argumento correspondiente y poder actuar en consonancia. De esta manera podemos hacer que métodos asíncronos actúen como métodos síncronos.\\
+La comunicación con las interfaces se realiza mediante el objeto promesa o \emph{promise} de JavaScript. Este objeto se usa para las comunicaciones asíncronas y se caracteriza por tener tres estados: pendiente, cumplida o rechazada. Cuando una promesa ha sido llamada puede presentar el estado cumplida o rechazada, lo que nos permite llamar al argumento correspondiente y poder actuar en consonancia. De esta manera podemos hacer que métodos asíncronos actúen como métodos síncronos.\\
 
 El núcleo de la conexión con el servidor \emph{ardrone\_server} queda como sigue:\\
 
@@ -240,7 +240,7 @@ function land() {
 }
 \end{lstlisting}
 
-Las interfaces \emph{Navdata} y \emph{Pose3D} so las encargadas de suministrar todos los datos de navegación de los sensores. Las funciones con las que accedemos a estas interfaces y actualizamos todos estos datos son las siguientes:\\
+Las interfaces \emph{Navdata} y \emph{Pose3D} son las encargadas de suministrar todos los datos de navegación de los sensores. Las funciones con las que accedemos a estas interfaces y actualizamos todos estos datos son las siguientes:\\
 
 \begin{lstlisting}[caption=Variables actualización datos de los sensores.]
 
@@ -270,7 +270,7 @@ function updatePose(){
 \end{lstlisting}
 
 
-Llamando a estas funciones periódicamente tenemos actualizados los datos de navegación procedentes de los sensores: brújula, posición, velocidad, altitud...\\
+Llamando a estas funciones periódicamente tenemos actualizados en todo momento los datos de navegación procedentes de los sensores: brújula, posición, velocidad, altitud...\\
 
 Para poder teleoperar el drone se ha implementado una función que es la encargada de enviarle las órdenes de movimiento.\\
 
@@ -289,7 +289,7 @@ function sendVelocities () {
 
 \end{lstlisting}
 
-Dónde la variable \emph{cmd} contiene los parámetros que necesita el drone para moverse. Esta variable es una variable CMDVel de JdeRobot y tiene esta estructura:\\
+Esta función admite una variable como argumento, (\emph{cmd}) la cuál contiene los parámetros que espera recibir el drone. Esta variable es una variable CMDVel de JdeRobot y tiene esta estructura:\\
 
 \begin{lstlisting}[caption=Variable CMD]
 
